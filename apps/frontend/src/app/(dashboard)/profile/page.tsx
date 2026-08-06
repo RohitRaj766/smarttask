@@ -12,23 +12,49 @@ import { Button } from "../../../components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
 import { Skeleton } from "../../../components/ui/skeleton";
 import toast from "react-hot-toast";
-import { User, Mail, ChevronRight, Lock } from "lucide-react";
+import { User, Mail, ChevronRight, Lock, KeyRound, Eye, EyeOff, ShieldCheck } from "lucide-react";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
 });
 
+const strongPasswordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Must contain at least one lowercase letter")
+  .regex(/[0-9]/, "Must contain at least one number")
+  .regex(/[^A-Za-z0-9]/, "Must contain at least one special character (!@#$%^&*)");
+
+const changePasswordSchema = z
+  .object({
+    oldPassword: z.string().min(1, "Current password is required"),
+    newPassword: strongPasswordSchema,
+    confirmPassword: z.string().min(1, "Please confirm your new password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 type ProfileFormValues = z.infer<typeof profileSchema>;
+type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
 
 export default function ProfilePage() {
   const { user, isLoading, refreshProfile } = useAuth();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittingProfile, setIsSubmittingProfile] = useState(false);
+  const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
 
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Profile Form
   const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
+    register: registerProfile,
+    handleSubmit: handleSubmitProfile,
+    setValue: setProfileValue,
+    formState: { errors: profileErrors },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -36,22 +62,53 @@ export default function ProfilePage() {
     },
   });
 
+  // Password Form
+  const {
+    register: registerPassword,
+    handleSubmit: handleSubmitPassword,
+    reset: resetPasswordForm,
+    formState: { errors: passwordErrors },
+  } = useForm<ChangePasswordValues>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
   useEffect(() => {
     if (user?.name) {
-      setValue("name", user.name);
+      setProfileValue("name", user.name);
     }
-  }, [user, setValue]);
+  }, [user, setProfileValue]);
 
-  const onSubmit = async (data: ProfileFormValues) => {
+  const onProfileSubmit = async (data: ProfileFormValues) => {
     try {
-      setIsSubmitting(true);
+      setIsSubmittingProfile(true);
       await authApi.updateProfile(data);
       await refreshProfile();
       toast.success("Profile updated successfully!");
-    } catch {
-      toast.error("Failed to update profile");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to update profile");
     } finally {
-      setIsSubmitting(false);
+      setIsSubmittingProfile(false);
+    }
+  };
+
+  const onPasswordSubmit = async (data: ChangePasswordValues) => {
+    try {
+      setIsSubmittingPassword(true);
+      const res = await authApi.changePassword({
+        oldPassword: data.oldPassword,
+        newPassword: data.newPassword,
+      });
+      toast.success(res.message || "Password changed successfully!");
+      resetPasswordForm();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to change password");
+    } finally {
+      setIsSubmittingPassword(false);
     }
   };
 
@@ -62,6 +119,7 @@ export default function ProfilePage() {
           <Skeleton className="h-6 w-32 mx-auto" />
           <Skeleton className="h-10 w-56 mx-auto" />
           <Skeleton className="h-[280px] w-full rounded-2xl" />
+          <Skeleton className="h-[320px] w-full rounded-2xl" />
         </div>
       </div>
     );
@@ -83,13 +141,14 @@ export default function ProfilePage() {
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-extrabold tracking-tight">{user?.name || "Account Profile"}</h1>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            Manage your personal profile details and credentials.
+            Manage your personal profile details and security credentials.
           </p>
         </div>
 
+        {/* Personal Information Card */}
         <Card className="shadow-xl border-border bg-card/80 backdrop-blur-sm rounded-2xl overflow-hidden">
           <CardContent className="p-6 sm:p-8">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmitProfile(onProfileSubmit)} className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-border text-sm font-bold text-foreground">
                   <User className="h-4 w-4 text-primary" /> Personal Information
@@ -98,8 +157,8 @@ export default function ProfilePage() {
                 <Input
                   label="Full Name"
                   placeholder="Your full name"
-                  error={errors.name?.message}
-                  {...register("name")}
+                  error={profileErrors.name?.message}
+                  {...registerProfile("name")}
                 />
 
                 <div className="space-y-1">
@@ -119,8 +178,89 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex justify-end pt-2">
-                <Button type="submit" variant="primary" isLoading={isSubmitting} className="px-6">
+                <Button type="submit" variant="primary" isLoading={isSubmittingProfile} className="px-6">
                   Save Changes
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Security & Change Password Card */}
+        <Card className="shadow-xl border-border bg-card/80 backdrop-blur-sm rounded-2xl overflow-hidden">
+          <CardContent className="p-6 sm:p-8">
+            <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-border">
+                  <div className="flex items-center gap-2 text-sm font-bold text-foreground">
+                    <KeyRound className="h-4 w-4 text-primary" /> Security & Password
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground font-medium">
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" /> End-to-End Encrypted
+                  </span>
+                </div>
+
+                <Input
+                  label="Current Password"
+                  type={showOldPassword ? "text" : "password"}
+                  placeholder="Enter current password"
+                  error={passwordErrors.oldPassword?.message}
+                  rightElement={
+                    <button
+                      type="button"
+                      onClick={() => setShowOldPassword(!showOldPassword)}
+                      tabIndex={-1}
+                      className="focus:outline-none"
+                      aria-label="Toggle current password visibility"
+                    >
+                      {showOldPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  }
+                  {...registerPassword("oldPassword")}
+                />
+
+                <Input
+                  label="New Password"
+                  type={showNewPassword ? "text" : "password"}
+                  placeholder="Enter new strong password"
+                  error={passwordErrors.newPassword?.message}
+                  rightElement={
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      tabIndex={-1}
+                      className="focus:outline-none"
+                      aria-label="Toggle new password visibility"
+                    >
+                      {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  }
+                  {...registerPassword("newPassword")}
+                />
+
+                <Input
+                  label="Confirm New Password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Re-enter new password"
+                  error={passwordErrors.confirmPassword?.message}
+                  rightElement={
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      tabIndex={-1}
+                      className="focus:outline-none"
+                      aria-label="Toggle confirm password visibility"
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  }
+                  {...registerPassword("confirmPassword")}
+                />
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <Button type="submit" variant="primary" isLoading={isSubmittingPassword} className="px-6">
+                  Update Password
                 </Button>
               </div>
             </form>
@@ -130,3 +270,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+

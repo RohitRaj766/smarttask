@@ -20,6 +20,15 @@
     "plugins": [
       "expo-router",
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "a73ce81b-5b6f-45ff-8a50-12706e822150"
+      }
+    },
+    "owner": "rohitraj2k04"
   }
 }
