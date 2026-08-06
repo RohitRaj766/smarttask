@@ -35,14 +35,14 @@ export const setAuthCookies = (
 ): void => {
   const isProduction = env.NODE_ENV === "production";
 
-  res.cookie("accessToken", accessToken, {
+  res.cookie("smarttask_accessToken", accessToken, {
     httpOnly: true,
     secure: isProduction,
     sameSite: isProduction ? "none" : "lax",
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
 
-  res.cookie("refreshToken", refreshToken, {
+  res.cookie("smarttask_refreshToken", refreshToken, {
     httpOnly: true,
     secure: isProduction,
     sameSite: isProduction ? "none" : "lax",
@@ -53,13 +53,13 @@ export const setAuthCookies = (
 export const clearAuthCookies = (res: Response): void => {
   const isProduction = env.NODE_ENV === "production";
 
-  res.clearCookie("accessToken", {
+  res.clearCookie("smarttask_accessToken", {
     httpOnly: true,
     secure: isProduction,
     sameSite: isProduction ? "none" : "lax",
   });
 
-  res.clearCookie("refreshToken", {
+  res.clearCookie("smarttask_refreshToken", {
     httpOnly: true,
     secure: isProduction,
     sameSite: isProduction ? "none" : "lax",

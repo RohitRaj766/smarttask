@@ -17,7 +17,6 @@ export class TaskService {
       dueDate: doc.dueDate ? doc.dueDate.toISOString() : undefined,
       reminderAt: doc.reminderAt ? doc.reminderAt.toISOString() : undefined,
       userId: doc.userId.toString(),
-      isDeleted: doc.isDeleted || false,
       createdAt: doc.createdAt.toISOString(),
       updatedAt: doc.updatedAt.toISOString(),
     };

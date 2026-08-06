@@ -2,7 +2,7 @@ import React from "react";
 import { cn } from "../../lib/utils";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "danger" | "ghost";
+  variant?: "primary" | "secondary" | "outline" | "danger" | "ghost" | "success";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
 }
@@ -27,6 +27,7 @@ export const Button: React.FC<ButtonProps> = ({
     danger:
       "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive",
     ghost: "hover:bg-accent hover:text-accent-foreground focus:ring-primary shadow-none",
+    success: "bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500",
   };
 
   const sizes = {

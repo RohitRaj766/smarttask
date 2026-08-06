@@ -21,17 +21,17 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-2xl space-y-4">
-        <div className="flex items-center justify-between">
+      <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+            <h3 className="text-lg font-bold text-foreground leading-snug">{title}</h3>
             {description && (
-              <p className="text-sm text-muted-foreground mt-1">{description}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">{description}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+            className="rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors shrink-0"
           >
             <X className="h-5 w-5" />
           </button>
@@ -63,11 +63,11 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} description={description}>
-      <div className="flex justify-end gap-3 pt-4">
-        <Button variant="outline" onClick={onClose} disabled={isLoading}>
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-4 w-full">
+        <Button variant="outline" onClick={onClose} disabled={isLoading} className="w-full sm:w-auto">
           Cancel
         </Button>
-        <Button variant="danger" onClick={onConfirm} isLoading={isLoading}>
+        <Button variant="danger" onClick={onConfirm} isLoading={isLoading} className="w-full sm:w-auto">
           {confirmText}
         </Button>
       </div>

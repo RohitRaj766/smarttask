@@ -39,7 +39,6 @@ export interface ITask {
   dueDate?: string;
   reminderAt?: string;
   userId: string;
-  isDeleted?: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { useAuth } from "../store/auth.context";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent } from "../components/ui/card";
@@ -24,8 +23,6 @@ import {
 } from "lucide-react";
 
 export default function LandingPage() {
-  const { user } = useAuth();
-
   const businessBenefits = [
     {
       icon: Target,
@@ -59,32 +56,42 @@ export default function LandingPage() {
       icon: Layers,
       title: "Flexible Category Tagging",
       description:
-        "Organize workflows across Work, Personal, Study, Shopping, Health, and custom business categories.",
-      color: "text-pink-500 bg-pink-500/10 border-pink-500/20",
+        "Organize deliverables by Work, Personal, Strategy, or custom business verticals effortlessly.",
+      color: "text-indigo-500 bg-indigo-500/10 border-indigo-500/20",
     },
     {
       icon: ShieldCheck,
-      title: "Bank-Grade Security",
+      title: "Enterprise Security Architecture",
       description:
-        "Keep your corporate data protected with encrypted password storage, HttpOnly session tokens, and strict privacy controls.",
-      color: "text-teal-500 bg-teal-500/10 border-teal-500/20",
+        "Built with HTTP-only cookie authentication, refresh token rotation, and robust data encryption.",
+      color: "text-rose-500 bg-rose-500/10 border-rose-500/20",
     },
   ];
 
-  const stats = [
-    { label: "Completion Rate", value: "98.4%" },
-    { label: "Time Saved Weekly", value: "8+ Hours" },
-    { label: "System Uptime", value: "99.99%" },
-    { label: "Active Task Tracking", value: "Unlimited" },
+  const workflowSteps = [
+    {
+      step: "01",
+      title: "Capture & Organize",
+      description: "Log initiatives with detailed specifications, priority levels, and category tags.",
+    },
+    {
+      step: "02",
+      title: "Prioritize Execution",
+      description: "Filter and sort your workload by urgency to focus effort where ROI is highest.",
+    },
+    {
+      step: "03",
+      title: "Track Progress & Scale",
+      description: "Monitor status progression (TODO, In Progress, Review, Completed) seamlessly.",
+    },
   ];
 
   return (
-    <div className="flex flex-col min-h-screen -mt-4 sm:-mt-6">
-      {/* Main Content Area */}
-      <main className="flex-1 space-y-24 py-8 sm:py-16">
-        {/* Hero Section */}
-        <section className="relative text-center space-y-8 max-w-4xl mx-auto px-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/10 text-primary text-xs font-semibold tracking-wide">
+    <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-background">
+      {/* 1. Hero Section */}
+      <section className="relative py-20 md:py-28 overflow-hidden border-b border-border bg-gradient-to-b from-background via-card/50 to-background">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8 relative z-10">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/10 text-primary text-xs sm:text-sm font-bold shadow-sm">
             <Sparkles className="h-4 w-4" />
             <span>Elevate Your Daily Team Workflow</span>
           </div>
@@ -101,190 +108,177 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-            {user ? (
-              <Link href="/dashboard">
-                <Button size="lg" className="gap-2 px-8 text-base shadow-lg shadow-primary/25">
-                  <LayoutDashboard className="h-5 w-5" /> Go to Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/signup">
-                  <Button size="lg" className="gap-2 px-8 text-base shadow-lg shadow-primary/25">
-                    Start Free Workspace <ArrowRight className="h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link href="/login">
-                  <Button size="lg" variant="outline" className="px-8 text-base">
-                    Sign In
-                  </Button>
-                </Link>
-              </>
-            )}
+            <Link href="/signup">
+              <Button size="lg" className="gap-2 px-8 text-base shadow-lg shadow-primary/25">
+                Start Free Workspace <ArrowRight className="h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button size="lg" variant="outline" className="px-8 text-base">
+                Sign In
+              </Button>
+            </Link>
           </div>
 
-          {/* Interactive SaaS Mockup */}
-          <div className="pt-8">
-            <div className="relative rounded-2xl border border-border bg-card/70 p-4 sm:p-6 shadow-2xl backdrop-blur-xl max-w-3xl mx-auto">
-              <div className="flex items-center justify-between border-b border-border pb-4 mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                    <CheckSquare className="h-5 w-5" />
-                  </div>
-                  <div className="text-left">
-                    <h4 className="text-xs font-bold text-foreground">Project Workspace</h4>
-                    <p className="text-[10px] text-muted-foreground">Executive Overview</p>
-                  </div>
-                </div>
-                <Badge variant="success" className="text-[10px] gap-1">
-                  <CheckCircle2 className="h-3 w-3" /> System Synchronized
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3 text-left mb-6">
-                <div className="p-3 rounded-xl border border-primary/20 bg-primary/5">
-                  <p className="text-[10px] text-muted-foreground uppercase font-bold">Total Scope</p>
-                  <p className="text-xl font-extrabold text-primary">32 Tasks</p>
-                </div>
-                <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/5">
-                  <p className="text-[10px] text-muted-foreground uppercase font-bold">Active Sprint</p>
-                  <p className="text-xl font-extrabold text-amber-500">12 Pending</p>
-                </div>
-                <div className="p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5">
-                  <p className="text-[10px] text-muted-foreground uppercase font-bold">Completed</p>
-                  <p className="text-xl font-extrabold text-emerald-500">20 Items</p>
-                </div>
-              </div>
-
-              <div className="space-y-2 text-left">
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-background/80 text-sm">
-                  <div className="flex items-center gap-3">
-                    <CheckSquare className="h-4 w-4 text-emerald-500" />
-                    <span className="font-semibold text-xs sm:text-sm">Finalize Quarterly Marketing Strategy</span>
-                  </div>
-                  <Badge variant="success">COMPLETED</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-background/80 text-sm">
-                  <div className="flex items-center gap-3">
-                    <ListTodo className="h-4 w-4 text-amber-500" />
-                    <span className="font-semibold text-xs sm:text-sm">Review Product Roadmap & Client Deliverables</span>
-                  </div>
-                  <Badge variant="warning">IN_PROGRESS</Badge>
-                </div>
-              </div>
+          {/* Social Proof / Metrics */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-12 max-w-4xl mx-auto border-t border-border/60">
+            <div>
+              <p className="text-3xl font-extrabold text-foreground">99.9%</p>
+              <p className="text-xs text-muted-foreground mt-1">Uptime Reliability</p>
+            </div>
+            <div>
+              <p className="text-3xl font-extrabold text-foreground">4.9/5</p>
+              <p className="text-xs text-muted-foreground mt-1">Productivity Score</p>
+            </div>
+            <div>
+              <p className="text-3xl font-extrabold text-foreground">3x</p>
+              <p className="text-xs text-muted-foreground mt-1">Faster Execution</p>
+            </div>
+            <div>
+              <p className="text-3xl font-extrabold text-foreground">10k+</p>
+              <p className="text-xs text-muted-foreground mt-1">Tasks Completed</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Stats Impact Banner */}
-        <section className="border-y border-border bg-card/40 py-8">
-          <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            {stats.map((stat, idx) => (
-              <div key={idx} className="space-y-1">
-                <p className="text-3xl font-black text-primary">{stat.value}</p>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Key Business Benefits Grid */}
-        <section className="space-y-12 max-w-6xl mx-auto px-4">
-          <div className="text-center space-y-3">
-            <h2 className="text-3xl font-extrabold tracking-tight">Everything You Need to Scale Output</h2>
-            <p className="text-muted-foreground text-sm max-w-xl mx-auto">
-              Purpose-built tools designed to reduce administrative chaos and keep team objectives on track.
+      {/* 2. Business Value Proposition Grid */}
+      <section className="py-20 bg-card/40 border-b border-border">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <Badge variant="outline" className="uppercase tracking-wider text-xs">
+              Enterprise Productivity
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              Designed for Teams Demanding Results
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Everything you need to move initiatives from strategic backlog to verified completion.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {businessBenefits.map((benefit, idx) => {
-              const Icon = benefit.icon;
+            {businessBenefits.map((item) => {
+              const Icon = item.icon;
               return (
-                <Card key={idx} className="border-border bg-card shadow-sm hover:shadow-md hover:border-primary/40 transition-all">
+                <Card
+                  key={item.title}
+                  className="shadow-sm hover:shadow-xl transition-all duration-300 border-border bg-card hover:-translate-y-1"
+                >
                   <CardContent className="p-6 space-y-4">
-                    <div className={`w-12 h-12 rounded-xl border flex items-center justify-center ${benefit.color}`}>
+                    <div
+                      className={`h-12 w-12 rounded-xl flex items-center justify-center border ${item.color}`}
+                    >
                       <Icon className="h-6 w-6" />
                     </div>
-                    <h3 className="text-lg font-bold">{benefit.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {benefit.description}
+                    <h3 className="text-lg font-bold">{item.title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                      {item.description}
                     </p>
                   </CardContent>
                 </Card>
               );
             })}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* CTA Banner */}
-        <section className="max-w-4xl mx-auto px-4">
-          <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-purple-500/10 p-8 sm:p-12 text-center space-y-6 shadow-xl">
-            <h2 className="text-3xl font-extrabold tracking-tight">Take Control of Your Workflows Today</h2>
-            <p className="text-muted-foreground max-w-lg mx-auto text-sm sm:text-base">
-              Join thousands of professionals using SmartTask to drive productivity, hit deadlines, and accomplish more every day.
-            </p>
-            <div className="flex justify-center gap-4">
-              <Link href="/signup">
-                <Button size="lg" className="px-8 shadow-md">
-                  Get Started Free
-                </Button>
-              </Link>
-            </div>
+      {/* 3. Operational Workflow Section */}
+      <section className="py-20 bg-background border-b border-border">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <Badge variant="outline" className="uppercase tracking-wider text-xs">
+              Simple 3-Step Workflow
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              How SmartTask Powers High Output
+            </h2>
           </div>
-        </section>
-      </main>
 
-      {/* Comprehensive Professional Footer */}
-      <footer className="w-full border-t border-border bg-card mt-16">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 py-12 space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {workflowSteps.map((step) => (
+              <div
+                key={step.step}
+                className="p-8 rounded-2xl border border-border bg-card/60 relative space-y-4"
+              >
+                <span className="text-4xl font-black text-primary/20">{step.step}</span>
+                <h3 className="text-xl font-bold">{step.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Full-Width CTA Banner */}
+      <section className="py-16 bg-gradient-to-r from-primary via-indigo-600 to-purple-600 text-primary-foreground">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            Ready to Supercharge Your Daily Productivity?
+          </h2>
+          <p className="text-base sm:text-lg opacity-90 max-w-xl mx-auto">
+            Join thousands of teams streamlining their workflows with SmartTask today.
+          </p>
+          <div className="pt-2">
+            <Link href="/signup">
+              <Button size="lg" variant="secondary" className="gap-2 px-8 text-base shadow-xl">
+                Get Started Now <ArrowRight className="h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Full-Screen Modern Footer */}
+      <footer className="w-full border-t border-border bg-card text-card-foreground">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-border">
             <div className="space-y-4 md:col-span-1">
-              <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary">
-                <CheckSquare className="h-6 w-6 text-primary" />
+              <div className="flex items-center gap-2 font-bold text-xl text-primary">
+                <CheckSquare className="h-6 w-6" />
                 <span>SmartTask</span>
-              </Link>
+              </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                The intuitive task management platform built for modern teams and ambitious professionals.
+                The modern task directory built for ambitious teams and professionals.
               </p>
             </div>
 
             <div>
               <h5 className="text-xs font-bold uppercase tracking-wider text-foreground mb-3">Product</h5>
               <ul className="space-y-2 text-xs text-muted-foreground">
-                <li><Link href="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link></li>
+                <li><Link href="/overview" className="hover:text-primary transition-colors">Overview</Link></li>
                 <li><Link href="/tasks" className="hover:text-primary transition-colors">Task Directory</Link></li>
                 <li><Link href="/tasks/new" className="hover:text-primary transition-colors">Create Task</Link></li>
               </ul>
             </div>
 
             <div>
-              <h5 className="text-xs font-bold uppercase tracking-wider text-foreground mb-3">Solutions</h5>
+              <h5 className="text-xs font-bold uppercase tracking-wider text-foreground mb-3">Key Features</h5>
               <ul className="space-y-2 text-xs text-muted-foreground">
-                <li><span className="hover:text-primary transition-colors cursor-pointer">Project Planning</span></li>
-                <li><span className="hover:text-primary transition-colors cursor-pointer">Daily Productivity</span></li>
-                <li><span className="hover:text-primary transition-colors cursor-pointer">Task Prioritization</span></li>
+                <li><span className="hover:text-primary transition-colors cursor-pointer">Priority Matrix</span></li>
+                <li><span className="hover:text-primary transition-colors cursor-pointer">Deadline Reminders</span></li>
+                <li><span className="hover:text-primary transition-colors cursor-pointer">Productivity Analytics</span></li>
+                <li><span className="hover:text-primary transition-colors cursor-pointer">Category Tagging</span></li>
               </ul>
             </div>
 
             <div>
-              <h5 className="text-xs font-bold uppercase tracking-wider text-foreground mb-3">Account & Access</h5>
+              <h5 className="text-xs font-bold uppercase tracking-wider text-foreground mb-3">Account</h5>
               <ul className="space-y-2 text-xs text-muted-foreground">
                 <li><Link href="/login" className="hover:text-primary transition-colors">Sign In</Link></li>
-                <li><Link href="/signup" className="hover:text-primary transition-colors">Register Free</Link></li>
-                <li><Link href="/profile" className="hover:text-primary transition-colors">User Profile</Link></li>
+                <li><Link href="/signup" className="hover:text-primary transition-colors">Create Account</Link></li>
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground gap-4">
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
             <p>© {new Date().getFullYear()} SmartTask Inc. All rights reserved.</p>
-            <div className="flex gap-6">
-              <span className="hover:text-foreground transition-colors cursor-pointer">Privacy Policy</span>
-              <span className="hover:text-foreground transition-colors cursor-pointer">Terms of Service</span>
-              <span className="hover:text-foreground transition-colors cursor-pointer">Security</span>
+            <div className="flex items-center gap-6">
+              <span>Privacy Policy</span>
+              <span>Terms of Service</span>
+              <span>Security</span>
             </div>
           </div>
         </div>

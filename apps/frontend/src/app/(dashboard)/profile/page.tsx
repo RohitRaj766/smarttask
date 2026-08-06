@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,10 +9,10 @@ import { useAuth } from "../../../store/auth.context";
 import { authApi } from "../../../services/auth.api";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "../../../components/ui/card";
-import { formatDate } from "../../../lib/utils";
+import { Card, CardContent } from "../../../components/ui/card";
+import { Skeleton } from "../../../components/ui/skeleton";
 import toast from "react-hot-toast";
-import { User, Mail, Calendar, ShieldCheck } from "lucide-react";
+import { User, Mail, ChevronRight, Lock } from "lucide-react";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -20,12 +21,13 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
-  const { user, refreshProfile } = useAuth();
+  const { user, isLoading, refreshProfile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -33,6 +35,12 @@ export default function ProfilePage() {
       name: user?.name || "",
     },
   });
+
+  useEffect(() => {
+    if (user?.name) {
+      setValue("name", user.name);
+    }
+  }, [user, setValue]);
 
   const onSubmit = async (data: ProfileFormValues) => {
     try {
@@ -47,70 +55,77 @@ export default function ProfilePage() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-2xl mx-auto space-y-4">
+          <Skeleton className="h-6 w-32 mx-auto" />
+          <Skeleton className="h-10 w-56 mx-auto" />
+          <Skeleton className="h-[280px] w-full rounded-2xl" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      {/* Centered Breadcrumb Navigation */}
+      <nav className="flex justify-center items-center gap-2 text-xs font-semibold text-muted-foreground">
+        <Link href="/overview" className="hover:text-primary transition-colors">
+          Dashboard
+        </Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="text-foreground font-bold">Profile</span>
+      </nav>
+
+      {/* Centered Modern Form Container */}
       <div className="max-w-2xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-extrabold tracking-tight">Account Profile</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Manage your personal details and account preferences.
-        </p>
-      </div>
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl font-extrabold tracking-tight">{user?.name || "Account Profile"}</h1>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            Manage your personal profile details and credentials.
+          </p>
+        </div>
 
-      <Card className="shadow-lg border-border">
-        <CardHeader>
-          <CardTitle className="text-lg font-bold flex items-center gap-2">
-            <User className="h-5 w-5 text-primary" /> Profile Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <Input
-              label="Full Name"
-              error={errors.name?.message}
-              {...register("name")}
-            />
+        <Card className="shadow-xl border-border bg-card/80 backdrop-blur-sm rounded-2xl overflow-hidden">
+          <CardContent className="p-6 sm:p-8">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-border text-sm font-bold text-foreground">
+                  <User className="h-4 w-4 text-primary" /> Personal Information
+                </div>
 
-            <div className="space-y-1">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Email Address (Read-only)
-              </label>
-              <div className="flex items-center gap-2 px-3 py-2 border border-input rounded-lg bg-muted/40 text-muted-foreground text-sm">
-                <Mail className="h-4 w-4" />
-                {user?.email}
-              </div>
-            </div>
+                <Input
+                  label="Full Name"
+                  placeholder="Your full name"
+                  error={errors.name?.message}
+                  {...register("name")}
+                />
 
-            <div className="flex justify-end pt-2">
-              <Button type="submit" variant="primary" isLoading={isSubmitting}>
-                Update Profile
-              </Button>
-            </div>
-          </form>
-
-          <div className="border-t border-border pt-6 space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Account Metadata
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center gap-2 p-3 rounded-lg border border-border bg-card">
-                <Calendar className="h-4 w-4 text-primary" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Member Since</p>
-                  <p className="font-semibold">{formatDate(user?.createdAt)}</p>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Email Address
+                    </label>
+                    <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground font-semibold">
+                      <Lock className="h-3 w-3" /> Verified & Locked
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-2.5 border border-input rounded-lg bg-muted/40 text-muted-foreground text-sm font-medium">
+                    <Mail className="h-4 w-4 text-primary/70" />
+                    {user?.email}
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 p-3 rounded-lg border border-border bg-card">
-                <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Authentication</p>
-                  <p className="font-semibold">JWT HttpOnly Cookies</p>
-                </div>
+
+              <div className="flex justify-end pt-2">
+                <Button type="submit" variant="primary" isLoading={isSubmitting} className="px-6">
+                  Save Changes
+                </Button>
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

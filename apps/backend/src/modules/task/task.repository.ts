@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import { FilterQuery, Types } from "mongoose";
 import { BaseRepository } from "../../shared/base.repository.js";
 import { TaskModel } from "./task.schema.js";
 import { ITaskDocument } from "./task.types.js";
@@ -61,7 +61,7 @@ export class TaskRepository extends BaseRepository<ITaskDocument> {
 
   async getStatusCounts(userId: string) {
     return this.model.aggregate([
-      { $match: { userId, isDeleted: false } },
+      { $match: { userId: new Types.ObjectId(userId), isDeleted: false } },
       { $group: { _id: "$status", count: { $sum: 1 } } },
     ]);
   }

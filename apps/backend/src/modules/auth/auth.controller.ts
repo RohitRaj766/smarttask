@@ -29,7 +29,7 @@ export class AuthController {
 
   refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const refreshToken = req.cookies?.refreshToken;
+      const refreshToken = req.cookies?.smarttask_refreshToken;
       const tokens = await this.authService.refreshToken(refreshToken);
       setAuthCookies(res, tokens.accessToken, tokens.refreshToken);
       sendSuccessResponse(res, 200, "Token refreshed successfully");

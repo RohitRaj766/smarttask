@@ -50,7 +50,61 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground min-h-screen transition-colors duration-200;
+    @apply bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground min-h-screen;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+}
+
+/* Circular View Transition API CSS */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+.dark::view-transition-old(root) {
+  z-index: 9999;
+}
+
+.dark::view-transition-new(root) {
+  z-index: 1;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted) / 0.8) 0%,
+    hsl(var(--primary) / 0.2) 30%,
+    hsl(var(--muted) / 0.8) 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite linear;
+}
+
+.dark .skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted) / 0.5) 0%,
+    hsl(var(--primary) / 0.3) 30%,
+    hsl(var(--muted) / 0.5) 60%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite linear;
 }

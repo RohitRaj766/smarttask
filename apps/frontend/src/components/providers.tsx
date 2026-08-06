@@ -19,7 +19,7 @@ const queryClient = new QueryClient({
 export const AppProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
+      <NextThemesProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange={false}>
         <AuthProvider>
           {children}
           <Toaster

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,10 +11,10 @@ import { taskApi } from "../../../../services/task.api";
 import { Input } from "../../../../components/ui/input";
 import { Select } from "../../../../components/ui/select";
 import { Button } from "../../../../components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "../../../../components/ui/card";
+import { Card, CardContent } from "../../../../components/ui/card";
 import { TaskStatus, TaskPriority, TaskCategory } from "@/types";
 import toast from "react-hot-toast";
-import { ArrowLeft } from "lucide-react";
+import { ChevronRight, FileText, Sliders, Calendar, Sparkles } from "lucide-react";
 
 const createTaskSchema = z.object({
   title: z.string().min(1, "Title is required").max(150, "Title must be under 150 characters"),
@@ -74,82 +75,115 @@ export default function CreateTaskPage() {
 
   return (
     <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      {/* Centered Breadcrumb Navigation */}
+      <nav className="flex justify-center items-center gap-2 text-xs font-semibold text-muted-foreground">
+        <Link href="/overview" className="hover:text-primary transition-colors">
+          Dashboard
+        </Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <Link href="/tasks" className="hover:text-primary transition-colors">
+          Tasks
+        </Link>
+        <ChevronRight className="h-3.5 w-3.5" />
+        <span className="text-foreground font-bold">Create New Task</span>
+      </nav>
+
+      {/* Centered Modern Form Container */}
       <div className="max-w-2xl mx-auto space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => router.back()}>
-          <ArrowLeft className="h-4 w-4 mr-1" /> Back
-        </Button>
-        <h1 className="text-2xl font-bold">Create New Task</h1>
-      </div>
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
+            <Sparkles className="h-3.5 w-3.5" /> New Initiative
+          </div>
+          <h1 className="text-3xl font-extrabold tracking-tight">Create New Task</h1>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            Define objectives, assign status & priority, and schedule reminders.
+          </p>
+        </div>
 
-      <Card className="shadow-lg border-border">
-        <CardHeader>
-          <CardTitle>Task Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <Input
-              label="Title *"
-              placeholder="e.g. Implement user authentication flow"
-              error={errors.title?.message}
-              {...register("title")}
-            />
+        <Card className="shadow-xl border-border bg-card/80 backdrop-blur-sm rounded-2xl overflow-hidden">
+          <CardContent className="p-6 sm:p-8">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Section 1: Basic Information */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-border text-sm font-bold text-foreground">
+                  <FileText className="h-4 w-4 text-primary" /> Task Basics
+                </div>
+                <Input
+                  label="Title *"
+                  placeholder="e.g. Implement user authentication flow"
+                  error={errors.title?.message}
+                  {...register("title")}
+                />
 
-            <div className="space-y-1">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Description
-              </label>
-              <textarea
-                className="flex w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[100px]"
-                placeholder="Provide detailed instructions or context..."
-                {...register("description")}
-              />
-            </div>
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Description
+                  </label>
+                  <textarea
+                    className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[110px] transition-colors"
+                    placeholder="Provide detailed instructions or context..."
+                    {...register("description")}
+                  />
+                </div>
+              </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Select
-                label="Status"
-                options={Object.values(TaskStatus).map((s) => ({ label: s, value: s }))}
-                {...register("status")}
-              />
-              <Select
-                label="Priority"
-                options={Object.values(TaskPriority).map((p) => ({ label: p, value: p }))}
-                {...register("priority")}
-              />
-              <Select
-                label="Category"
-                options={Object.values(TaskCategory).map((c) => ({ label: c, value: c }))}
-                {...register("category")}
-              />
-            </div>
+              {/* Section 2: Classification */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-border text-sm font-bold text-foreground">
+                  <Sliders className="h-4 w-4 text-primary" /> Classification & Priority
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <Select
+                    label="Status"
+                    options={Object.values(TaskStatus).map((s) => ({ label: s, value: s }))}
+                    {...register("status")}
+                  />
+                  <Select
+                    label="Priority"
+                    options={Object.values(TaskPriority).map((p) => ({ label: p, value: p }))}
+                    {...register("priority")}
+                  />
+                  <Select
+                    label="Category"
+                    options={Object.values(TaskCategory).map((c) => ({ label: c, value: c }))}
+                    {...register("category")}
+                  />
+                </div>
+              </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="Due Date"
-                type="date"
-                error={errors.dueDate?.message}
-                {...register("dueDate")}
-              />
-              <Input
-                label="Reminder Timestamp"
-                type="datetime-local"
-                error={errors.reminderAt?.message}
-                {...register("reminderAt")}
-              />
-            </div>
+              {/* Section 3: Scheduling */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-border text-sm font-bold text-foreground">
+                  <Calendar className="h-4 w-4 text-primary" /> Due Date & Reminders
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Input
+                    label="Due Date"
+                    type="date"
+                    error={errors.dueDate?.message}
+                    {...register("dueDate")}
+                  />
+                  <Input
+                    label="Reminder Timestamp"
+                    type="datetime-local"
+                    error={errors.reminderAt?.message}
+                    {...register("reminderAt")}
+                  />
+                </div>
+              </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-border">
-              <Button type="button" variant="outline" onClick={() => router.back()}>
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary" isLoading={isSubmitting}>
-                Save Task
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+              {/* Footer Actions */}
+              <div className="flex items-center justify-end gap-3 pt-6 border-t border-border">
+                <Button type="button" variant="outline" onClick={() => router.back()}>
+                  Cancel
+                </Button>
+                <Button type="submit" variant="primary" isLoading={isSubmitting} className="px-6">
+                  Save Task
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

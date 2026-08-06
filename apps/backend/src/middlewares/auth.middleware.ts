@@ -16,7 +16,7 @@ export const authenticate = (
   next: NextFunction
 ): void => {
   try {
-    const token = req.cookies?.accessToken;
+    const token = req.cookies?.smarttask_accessToken;
 
     if (!token) {
       throw new UnauthorizedException("Authentication token missing");

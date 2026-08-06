@@ -19,7 +19,7 @@ const swaggerDocument = {
       cookieAuth: {
         type: "apiKey",
         in: "cookie",
-        name: "accessToken",
+        name: "smarttask_accessToken",
       },
     },
     schemas: {
@@ -62,6 +62,17 @@ const swaggerDocument = {
           userId: { type: "string" },
           createdAt: { type: "string" },
           updatedAt: { type: "string" },
+        },
+      },
+      TaskStats: {
+        type: "object",
+        properties: {
+          TOTAL: { type: "integer", example: 49 },
+          BACKLOG: { type: "integer", example: 0 },
+          TODO: { type: "integer", example: 49 },
+          IN_PROGRESS: { type: "integer", example: 0 },
+          REVIEW: { type: "integer", example: 0 },
+          COMPLETED: { type: "integer", example: 0 },
         },
       },
     },
@@ -139,6 +150,30 @@ const swaggerDocument = {
         tags: ["Enums"],
         summary: "Get all enum types",
         responses: { 200: { description: "All enums" } },
+      },
+    },
+    "/tasks/stats": {
+      get: {
+        tags: ["Tasks"],
+        summary: "Get task count statistics by status",
+        security: [{ cookieAuth: [] }],
+        responses: {
+          200: {
+            description: "Task count statistics",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", example: true },
+                    message: { type: "string", example: "Task statistics fetched successfully" },
+                    data: { $ref: "#/components/schemas/TaskStats" },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
     "/tasks": {
