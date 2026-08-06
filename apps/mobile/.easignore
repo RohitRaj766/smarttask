@@ -1,0 +1,9 @@
+node_modules
+.expo
+dist
+.next
+android
+ios
+web-build
+*.apk
+*.aab

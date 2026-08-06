@@ -1,6 +1,8 @@
 node_modules/
 .expo/
 dist/
+android/
+ios/
 npm-debug.*
 *.jks
 *.p8
@@ -14,3 +16,4 @@ web-build/
 .env
 .env.local
 .env*.local
+
