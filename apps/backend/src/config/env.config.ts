@@ -9,7 +9,7 @@ const envSchema = z.object({
   MONGODB_URI: z.string().default("mongodb://localhost:27017/smarttask"),
   JWT_ACCESS_SECRET: z.string().default("access-secret-key-smarttask-2026"),
   JWT_REFRESH_SECRET: z.string().default("refresh-secret-key-smarttask-2026"),
-  CORS_ORIGIN: z.string().default("http://localhost:3000"),
+  CORS_ORIGIN: z.string().default("http://localhost:3000,https://smarttaskk.vercel.app/"),
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default("SmartTask Notification <onboarding@resend.dev>"),
   OTP_EXPIRY_MINUTES: z.string().default("10"),
