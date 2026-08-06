@@ -18,6 +18,13 @@ export class UserRepository extends BaseRepository<IUserDocument> {
     return this.model.findOne({ _id: id, isDeleted: false }).exec();
   }
 
+  async findByIdWithPassword(id: string): Promise<IUserDocument | null> {
+    return this.model
+      .findOne({ _id: id, isDeleted: false })
+      .select("+password")
+      .exec();
+  }
+
   async incrementTokenVersion(userId: string): Promise<IUserDocument | null> {
     return this.model
       .findOneAndUpdate(

@@ -37,19 +37,22 @@ export class UserService {
   }
 
   async changePassword(userId: string, dto: ChangePasswordDto) {
-    const user = await this.userRepository.findById(userId);
+    const user = await this.userRepository.findByIdWithPassword(userId);
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
-    if (user.password) {
-      if (!dto.oldPassword) {
-        throw new BadRequestException("Current password is required");
-      }
-      const isMatch = await bcrypt.compare(dto.oldPassword, user.password);
-      if (!isMatch) {
-        throw new BadRequestException("Current password is incorrect");
-      }
+    if (!dto.oldPassword) {
+      throw new BadRequestException("Current password is required");
+    }
+
+    if (!user.password) {
+      throw new BadRequestException("User password record not found");
+    }
+
+    const isMatch = await bcrypt.compare(dto.oldPassword, user.password);
+    if (!isMatch) {
+      throw new BadRequestException("Current password is incorrect");
     }
 
     const saltRounds = 10;

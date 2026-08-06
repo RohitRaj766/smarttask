@@ -96,6 +96,10 @@ export default function ProfileScreen() {
 
   const handleChangePassword = async () => {
     setPasswordError("");
+    if (!oldPassword.trim()) {
+      setPasswordError("Please enter your current password");
+      return;
+    }
     if (!newPassword.trim()) {
       setPasswordError("Please enter a new password");
       return;
@@ -377,7 +381,7 @@ export default function ProfileScreen() {
               <Text style={{ fontSize: 12, fontWeight: "600", color: "#ef4444" }}>{passwordError}</Text>
             ) : null}
             <AppInput
-              label="Current Password (Optional)"
+              label="Current Password"
               placeholder="Enter current password"
               value={oldPassword}
               onChangeText={(t) => {

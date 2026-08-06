@@ -12,12 +12,12 @@ export interface ChangePasswordPayload {
 
 export const userService = {
   async updateProfile(payload: UpdateProfilePayload): Promise<ISuccessResponse<IUser>> {
-    const res = await apiClient.patch<ISuccessResponse<IUser>>("/users/profile", payload);
+    const res = await apiClient.patch<ISuccessResponse<IUser>>("/user/profile", payload);
     return res.data;
   },
 
   async changePassword(payload: ChangePasswordPayload): Promise<ISuccessResponse<null>> {
-    const res = await apiClient.post<ISuccessResponse<null>>("/users/change-password", payload);
+    const res = await apiClient.post<ISuccessResponse<null>>("/user/change-password", payload);
     return res.data;
   },
 };
