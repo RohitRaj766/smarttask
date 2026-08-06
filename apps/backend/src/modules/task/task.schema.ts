@@ -25,7 +25,9 @@ const taskSchema = new Schema<ITaskDocument>(
       index: true,
     },
     dueDate: { type: Date },
-    reminderAt: { type: Date },
+    reminderAt: { type: Date, index: true },
+    isReminderSent: { type: Boolean, default: false, index: true },
+    reminderSentAt: { type: Date },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
     isDeleted: { type: Boolean, default: false, index: true },
   },
@@ -33,5 +35,6 @@ const taskSchema = new Schema<ITaskDocument>(
 );
 
 taskSchema.index({ userId: 1, isDeleted: 1, title: "text" });
+taskSchema.index({ reminderAt: 1, isReminderSent: 1, isDeleted: 1, status: 1 });
 
 export const TaskModel = model<ITaskDocument>("Task", taskSchema);

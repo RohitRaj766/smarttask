@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { IUser } from "@/types";
-import { authApi, LoginPayload, SignupPayload } from "../services/auth.api";
+import { authApi, LoginPayload, SignupPayload, VerifyEmailPayload } from "../services/auth.api";
 import { useRouter, usePathname } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -10,14 +10,16 @@ interface AuthContextType {
   user: IUser | null;
   isLoading: boolean;
   login: (payload: LoginPayload) => Promise<void>;
-  signup: (payload: SignupPayload) => Promise<void>;
+  signup: (payload: SignupPayload) => Promise<{ userId: string; email: string }>;
+  verifyEmail: (payload: VerifyEmailPayload) => Promise<void>;
+  resendOtp: (email: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const PUBLIC_ROUTES = ["/", "/login", "/signup"];
+const PUBLIC_ROUTES = ["/", "/login", "/signup", "/verify-email", "/forgot-password", "/reset-password"];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
@@ -55,8 +57,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const isPublic = PUBLIC_ROUTES.includes(pathname);
       if (!user && !isPublic) {
-        router.push("/login");
-      } else if (user && (pathname === "/login" || pathname === "/signup")) {
+        router.push("/");
+      } else if (user && (pathname === "/login" || pathname === "/signup" || pathname === "/verify-email")) {
         router.push("/overview");
       }
     }
@@ -81,12 +83,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await authApi.signup(payload);
       if (res.success) {
+        toast.success("Registration successful! Check your email for verification OTP.");
+        return res.data;
+      }
+      throw new Error(res.message);
+    } catch (err: any) {
+      const message = err?.response?.data?.message || "Failed to create account";
+      toast.error(message);
+      throw err;
+    }
+  };
+
+  const verifyEmail = async (payload: VerifyEmailPayload) => {
+    try {
+      const res = await authApi.verifyEmail(payload);
+      if (res.success) {
         setUser(res.data.user);
-        toast.success("Account created successfully!");
+        toast.success("Email verified successfully! Welcome aboard.");
         router.push("/overview");
       }
     } catch (err: any) {
-      const message = err?.response?.data?.message || "Failed to create account";
+      const message = err?.response?.data?.message || "Invalid or expired OTP code";
+      toast.error(message);
+      throw err;
+    }
+  };
+
+  const resendOtp = async (email: string) => {
+    try {
+      const res = await authApi.resendOtp({ email });
+      if (res.success) {
+        toast.success("A new verification OTP has been sent to your email.");
+      }
+    } catch (err: any) {
+      const message = err?.response?.data?.message || "Failed to resend OTP";
       toast.error(message);
       throw err;
     }
@@ -98,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setUser(null);
       toast.success("Logged out successfully");
-      router.push("/login");
+      router.push("/");
     }
   };
 
@@ -113,6 +143,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         signup,
+        verifyEmail,
+        resendOtp,
         logout,
         refreshProfile,
       }}

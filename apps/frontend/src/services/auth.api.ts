@@ -12,14 +12,63 @@ export interface SignupPayload {
   password?: string;
 }
 
+export interface VerifyEmailPayload {
+  email: string;
+  otp: string;
+}
+
+export interface ResendOtpPayload {
+  email: string;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface VerifyResetOtpPayload {
+  email: string;
+  otp: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  otp: string;
+  newPassword?: string;
+}
+
 export const authApi = {
-  signup: async (payload: SignupPayload): Promise<ISuccessResponse<{ user: IUser }>> => {
+  signup: async (payload: SignupPayload): Promise<ISuccessResponse<{ userId: string; email: string }>> => {
     const response = await apiClient.post("/auth/signup", payload);
+    return response.data;
+  },
+
+  verifyEmail: async (payload: VerifyEmailPayload): Promise<ISuccessResponse<{ user: IUser }>> => {
+    const response = await apiClient.post("/auth/verify-email", payload);
+    return response.data;
+  },
+
+  resendOtp: async (payload: ResendOtpPayload): Promise<ISuccessResponse<object>> => {
+    const response = await apiClient.post("/auth/resend-otp", payload);
     return response.data;
   },
 
   login: async (payload: LoginPayload): Promise<ISuccessResponse<{ user: IUser }>> => {
     const response = await apiClient.post("/auth/login", payload);
+    return response.data;
+  },
+
+  forgotPassword: async (payload: ForgotPasswordPayload): Promise<ISuccessResponse<object>> => {
+    const response = await apiClient.post("/auth/forgot-password", payload);
+    return response.data;
+  },
+
+  verifyResetOtp: async (payload: VerifyResetOtpPayload): Promise<ISuccessResponse<object>> => {
+    const response = await apiClient.post("/auth/verify-reset-otp", payload);
+    return response.data;
+  },
+
+  resetPassword: async (payload: ResetPasswordPayload): Promise<ISuccessResponse<object>> => {
+    const response = await apiClient.post("/auth/reset-password", payload);
     return response.data;
   },
 

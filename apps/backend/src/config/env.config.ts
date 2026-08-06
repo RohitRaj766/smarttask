@@ -10,6 +10,10 @@ const envSchema = z.object({
   JWT_ACCESS_SECRET: z.string().default("access-secret-key-smarttask-2026"),
   JWT_REFRESH_SECRET: z.string().default("refresh-secret-key-smarttask-2026"),
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().default("SmartTask Notification <onboarding@resend.dev>"),
+  OTP_EXPIRY_MINUTES: z.string().default("10"),
+  CRON_EXPRESSION: z.string().default("* * * * *"),
 });
 
 export const env = envSchema.parse(process.env);

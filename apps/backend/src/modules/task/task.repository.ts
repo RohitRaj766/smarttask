@@ -3,6 +3,7 @@ import { BaseRepository } from "../../shared/base.repository.js";
 import { TaskModel } from "./task.schema.js";
 import { ITaskDocument } from "./task.types.js";
 import { TaskQueryDto } from "./task.dto.js";
+import { TaskStatus } from "../../shared/types/index.js";
 
 export class TaskRepository extends BaseRepository<ITaskDocument> {
   constructor() {
@@ -64,5 +65,31 @@ export class TaskRepository extends BaseRepository<ITaskDocument> {
       { $match: { userId: new Types.ObjectId(userId), isDeleted: false } },
       { $group: { _id: "$status", count: { $sum: 1 } } },
     ]);
+  }
+
+  async findPendingReminders(): Promise<ITaskDocument[]> {
+    const now = new Date();
+    return this.model
+      .find({
+        reminderAt: { $lte: now, $ne: null },
+        status: { $ne: TaskStatus.COMPLETED },
+        isReminderSent: false,
+        isDeleted: false,
+      })
+      .populate("userId", "name email")
+      .exec();
+  }
+
+  async markReminderSent(taskId: string): Promise<ITaskDocument | null> {
+    return this.model
+      .findByIdAndUpdate(
+        taskId,
+        {
+          isReminderSent: true,
+          reminderSentAt: new Date(),
+        },
+        { new: true }
+      )
+      .exec();
   }
 }

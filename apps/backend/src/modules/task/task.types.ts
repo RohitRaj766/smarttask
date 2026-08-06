@@ -10,6 +10,8 @@ export interface ITaskDocument extends Document {
   category: TaskCategory;
   dueDate?: Date;
   reminderAt?: Date;
+  isReminderSent: boolean;
+  reminderSentAt?: Date;
   userId: Types.ObjectId;
   isDeleted: boolean;
   createdAt: Date;
