@@ -270,6 +270,56 @@ const swaggerDocument = {
         responses: { 200: { description: "User profile" } },
       },
     },
+    "/user/profile": {
+      get: {
+        tags: ["User"],
+        summary: "Get logged-in user profile details",
+        security: [{ cookieAuth: [] }],
+        responses: { 200: { description: "User profile details" } },
+      },
+      patch: {
+        tags: ["User"],
+        summary: "Update user profile details (e.g. name)",
+        security: [{ cookieAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string", example: "John Doe" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "Profile updated successfully" } },
+      },
+    },
+    "/user/change-password": {
+      post: {
+        tags: ["User"],
+        summary: "Change current user password",
+        security: [{ cookieAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["oldPassword", "newPassword"],
+                properties: {
+                  oldPassword: { type: "string", example: "OldPassword123!" },
+                  newPassword: { type: "string", example: "NewPassword123!" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "Password changed successfully" } },
+      },
+    },
     "/notifications": {
       get: {
         tags: ["Notifications"],
