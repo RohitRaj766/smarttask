@@ -19,6 +19,7 @@ const authService = new AuthService(userRepository);
 const authController = new AuthController(authService);
 
 router.post("/signup", validateSignup, authController.signup);
+router.post("/register", validateSignup, authController.signup);
 router.post("/verify-email", validateVerifyEmail, authController.verifyEmail);
 router.post("/resend-otp", validateResendOtp, authController.resendOtp);
 router.post("/login", validateLogin, authController.login);

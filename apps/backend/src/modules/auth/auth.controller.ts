@@ -23,7 +23,7 @@ export class AuthController {
     try {
       const { user, accessToken, refreshToken } = await this.authService.verifyEmail(req.body);
       setAuthCookies(res, accessToken, refreshToken);
-      sendSuccessResponse(res, 200, "Email verified successfully", { user });
+      sendSuccessResponse(res, 200, "Email verified successfully", { user, accessToken, refreshToken });
     } catch (error) {
       next(error);
     }
@@ -42,7 +42,7 @@ export class AuthController {
     try {
       const { user, accessToken, refreshToken } = await this.authService.login(req.body);
       setAuthCookies(res, accessToken, refreshToken);
-      sendSuccessResponse(res, 200, "Logged in successfully", { user });
+      sendSuccessResponse(res, 200, "Logged in successfully", { user, accessToken, refreshToken });
     } catch (error) {
       next(error);
     }
