@@ -19,7 +19,7 @@ export class NotificationController {
     try {
       if (!req.user) throw new UnauthorizedException();
       const userId = req.user.userId;
-      const { id } = req.params;
+      const id = req.params.id as string;
       const notification = await notificationService.markAsRead(id, userId);
 
       if (!notification) {
