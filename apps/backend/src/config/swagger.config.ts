@@ -1,5 +1,32 @@
 import { Express } from "express";
 import swaggerUi from "swagger-ui-express";
+import { env } from "./env.config.js";
+
+const serverList: { url: string; description: string }[] = [
+  {
+    url: "/api/v1",
+    description: "Current Server (Auto-detect Host)",
+  },
+];
+
+if (process.env.RENDER_EXTERNAL_URL) {
+  serverList.push({
+    url: `${process.env.RENDER_EXTERNAL_URL.replace(/\/$/, "")}/api/v1`,
+    description: "Render Production Server",
+  });
+}
+
+if (env.SERVER_URL) {
+  serverList.push({
+    url: `${env.SERVER_URL.replace(/\/$/, "")}/api/v1`,
+    description: "Configured Server URL",
+  });
+}
+
+serverList.push({
+  url: `http://localhost:${env.PORT}/api/v1`,
+  description: "Local Development Server",
+});
 
 const swaggerDocument = {
   openapi: "3.0.0",
@@ -9,12 +36,7 @@ const swaggerDocument = {
     description:
       "Production-Ready RESTful API for Task Management Monorepo Application with OTP Verification, Forgot Password, Resend Email Provider, and Task Reminder System",
   },
-  servers: [
-    {
-      url: "http://localhost:5000/api/v1",
-      description: "Development Server",
-    },
-  ],
+  servers: serverList,
   components: {
     securitySchemes: {
       cookieAuth: {
