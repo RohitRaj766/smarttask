@@ -9,10 +9,10 @@ import { Button } from "../../../components/ui/button";
 import { Badge } from "../../../components/ui/badge";
 import { ConfirmDialog } from "../../../components/ui/modal";
 import { CustomizableTable, ColumnDef, FilterDef } from "../../../components/ui/customizable-table";
-import { formatDate } from "../../../lib/utils";
+import { formatDate, formatDateTime } from "../../../lib/utils";
 import { TaskStatus, TaskPriority, TaskCategory, ITaskQueryParams, ITask } from "@/types";
 import toast from "react-hot-toast";
-import { Plus, Edit3, Trash2, CheckCircle, Calendar } from "lucide-react";
+import { Plus, Edit3, Trash2, CheckCircle, Calendar, Bell } from "lucide-react";
 
 export default function TaskListPage() {
   const queryClient = useQueryClient();
@@ -203,6 +203,17 @@ export default function TaskListPage() {
         <div className="flex items-center gap-1.5">
           <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
           {formatDate(task.dueDate)}
+        </div>
+      ),
+    },
+    {
+      key: "reminderAt",
+      label: "Reminder",
+      cellClassName: "text-xs text-muted-foreground whitespace-nowrap",
+      render: (task) => (
+        <div className="flex items-center gap-1.5">
+          <Bell className="h-3.5 w-3.5 text-amber-500" />
+          {formatDateTime(task.reminderAt)}
         </div>
       ),
     },
