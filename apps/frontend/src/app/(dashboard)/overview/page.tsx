@@ -52,10 +52,15 @@ export default function DashboardPage() {
 
   return (
     <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+      {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-2">
-            Hello, {isAuthLoading ? <Skeleton className="h-8 w-40 rounded-lg inline-block" /> : (user?.name || "User")}
+            {isAuthLoading ? (
+              <Skeleton className="h-9 w-64 rounded-xl" />
+            ) : (
+              `Hello, ${user?.name || "User"}`
+            )}
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
             Here's an overview of your task statistics and recent activity.
@@ -68,28 +73,33 @@ export default function DashboardPage() {
         </Link>
       </div>
 
+      {/* Statistics Cards Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
-        {statCards.map((card) => (
-          <Card
-            key={card.title}
-            className={`border-l-4 shadow-sm hover:shadow-md transition-all ${card.color}`}
-          >
-            <CardHeader className="p-3 sm:p-4 pb-1 sm:pb-2">
-              <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider truncate">
-                {card.title}
-              </p>
-            </CardHeader>
-            <CardContent className="p-3 sm:p-4 pt-0">
-              {isStatsLoading ? (
-                <Skeleton className="h-8 w-12" />
-              ) : (
-                <p className="text-xl sm:text-2xl font-extrabold">{card.count}</p>
-              )}
-            </CardContent>
-          </Card>
-        ))}
+        {isStatsLoading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i} className="shadow-sm p-3 sm:p-4 space-y-2">
+                <Skeleton className="h-3 w-16 rounded" />
+                <Skeleton className="h-8 w-12 rounded-lg" />
+              </Card>
+            ))
+          : statCards.map((card) => (
+              <Card
+                key={card.title}
+                className={`border-l-4 shadow-sm hover:shadow-md transition-all ${card.color}`}
+              >
+                <CardHeader className="p-3 sm:p-4 pb-1 sm:pb-2">
+                  <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider truncate">
+                    {card.title}
+                  </p>
+                </CardHeader>
+                <CardContent className="p-3 sm:p-4 pt-0">
+                  <p className="text-xl sm:text-2xl font-extrabold">{card.count}</p>
+                </CardContent>
+              </Card>
+            ))}
       </div>
 
+      {/* Main Grid Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <Card className="lg:col-span-2 shadow-sm border-border">
           <CardHeader className="flex flex-row items-center justify-between">
@@ -104,9 +114,9 @@ export default function DashboardPage() {
             </Link>
           </CardHeader>
           <CardContent className="space-y-3">
-            {isTasksLoading ? (
+            {isTasksLoading || isStatsLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-lg" />
+                <Skeleton key={i} className="h-16 w-full rounded-xl" />
               ))
             ) : recentTasksData?.data?.items?.length ? (
               recentTasksData.data.items.map((task) => (
