@@ -59,6 +59,10 @@ RESEND_API_KEY=your_resend_api_key
 EMAIL_FROM=onboarding@resend.dev
 OTP_EXPIRY_MINUTES=10
 
+API_MAIL_KEY_PROMAILER=
+EMAIL_FROM_PROMAILER=
+PROMAILER_URL=
+
 # Task Reminder Cron
 CRON_EXPRESSION=* * * * *
 ```
@@ -71,7 +75,8 @@ NEXT_PUBLIC_API_PREFIX=/api/v1
 
 ### 3. Mobile (`apps/mobile/.env`)
 ```env
-EXPO_PUBLIC_API_URL=http://localhost:5000/api/v1
+EXPO_PUBLIC_API_URL=http://localhost:5000
+EXPO_PUBLIC_API_URL_PREFIX=/api/v1
 ```
 *Note for Mobile Testing:*
 - **Android Emulator**: Use `http://10.0.2.2:5000/api/v1`
