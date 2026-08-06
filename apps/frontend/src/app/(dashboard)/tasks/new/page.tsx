@@ -15,6 +15,7 @@ import { Card, CardContent } from "../../../../components/ui/card";
 import { TaskStatus, TaskPriority, TaskCategory } from "@/types";
 import toast from "react-hot-toast";
 import { ChevronRight, FileText, Sliders, Calendar, Sparkles } from "lucide-react";
+import { datetimeLocalToIso } from "../../../../lib/date.utils";
 
 const createTaskSchema = z.object({
   title: z.string().min(1, "Title is required").max(150, "Title must be under 150 characters"),
@@ -53,7 +54,7 @@ export default function CreateTaskPage() {
       taskApi.createTask({
         ...data,
         dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : null,
-        reminderAt: data.reminderAt ? new Date(data.reminderAt).toISOString() : null,
+        reminderAt: datetimeLocalToIso(data.reminderAt),
       }),
     onSuccess: () => {
       toast.success("Task created successfully!");

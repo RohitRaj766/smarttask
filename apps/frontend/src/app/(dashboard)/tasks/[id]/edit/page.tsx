@@ -16,6 +16,7 @@ import { Skeleton } from "../../../../../components/ui/skeleton";
 import { TaskStatus, TaskPriority, TaskCategory } from "@/types";
 import toast from "react-hot-toast";
 import { ChevronRight, FileText, Sliders, Calendar, Edit3 } from "lucide-react";
+import { formatToDatetimeLocal, datetimeLocalToIso } from "../../../../../lib/date.utils";
 
 const updateTaskSchema = z.object({
   title: z.string().min(1, "Title is required").max(150, "Title must be under 150 characters"),
@@ -61,7 +62,7 @@ export default function EditTaskPage() {
         priority: task.priority,
         category: task.category,
         dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
-        reminderAt: task.reminderAt ? new Date(task.reminderAt).toISOString().slice(0, 16) : "",
+        reminderAt: formatToDatetimeLocal(task.reminderAt),
       });
     }
   }, [taskData, reset]);
@@ -71,7 +72,7 @@ export default function EditTaskPage() {
       taskApi.updateTask(taskId, {
         ...data,
         dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : null,
-        reminderAt: data.reminderAt ? new Date(data.reminderAt).toISOString() : null,
+        reminderAt: datetimeLocalToIso(data.reminderAt),
       }),
     onSuccess: () => {
       toast.success("Task updated successfully!");
