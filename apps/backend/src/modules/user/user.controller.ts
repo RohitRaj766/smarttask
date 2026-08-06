@@ -25,4 +25,14 @@ export class UserController {
       next(error);
     }
   };
+
+  changePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user) throw new UnauthorizedException();
+      const result = await this.userService.changePassword(req.user.userId, req.body);
+      sendSuccessResponse(res, 200, result.message);
+    } catch (error) {
+      next(error);
+    }
+  };
 }

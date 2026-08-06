@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "SmartTask",
+    "slug": "smarttask-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "smarttask",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.smarttask.mobile"
+    },
+    "android": {
+      "package": "com.smarttask.mobile"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ]
+  }
+}
