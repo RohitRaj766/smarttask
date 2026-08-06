@@ -13,6 +13,7 @@ import { enumRoutes } from "./modules/enum/enum.routes.js";
 import notificationRoutes from "./modules/notification/notification.routes.js";
 import { notFoundHandler } from "./middlewares/not-found.middleware.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
+import { ForbiddenException } from "./utils/exceptions.js";
 
 const app: Express = express();
 
@@ -20,16 +21,34 @@ const app: Express = express();
 app.use(helmet());
 
 // 2. Cors
-const allowedOrigins = env.CORS_ORIGIN.split(",");
+const allowedOrigins = env.CORS_ORIGIN.split(",")
+  .map((o) => o.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
+if (process.env.RENDER_EXTERNAL_URL) {
+  allowedOrigins.push(process.env.RENDER_EXTERNAL_URL.trim().replace(/\/$/, ""));
+}
+if (env.SERVER_URL) {
+  allowedOrigins.push(env.SERVER_URL.trim().replace(/\/$/, ""));
+}
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+      if (!origin) {
+        return callback(null, true);
       }
+
+      const normalizedOrigin = origin.trim().replace(/\/$/, "");
+
+      if (
+        allowedOrigins.includes(normalizedOrigin) ||
+        normalizedOrigin.endsWith(".onrender.com")
+      ) {
+        return callback(null, true);
+      }
+
+      callback(new ForbiddenException(`CORS error: Origin ${origin} not allowed`));
     },
     credentials: true,
   })
