@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
@@ -9,6 +9,8 @@ import { useAuth } from "../../context/auth.context";
 import { useTheme } from "../../theme/theme.context";
 import { AppInput } from "../../components/ui/AppInput";
 import { AppButton } from "../../components/ui/AppButton";
+import { AppCard } from "../../components/ui/AppCard";
+import { AppAlertModal } from "../../components/ui/AppAlertModal";
 import { Mail, Lock, CheckSquare } from "lucide-react-native";
 
 const loginSchema = z.object({
@@ -23,6 +25,16 @@ export default function LoginScreen() {
   const { isDark } = useTheme();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+  }>({
+    visible: false,
+    title: "",
+    message: "",
+  });
 
   const {
     control,
@@ -39,82 +51,137 @@ export default function LoginScreen() {
       await login(data);
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || "Login failed";
-      Alert.alert("Authentication Error", msg);
+      setAlertConfig({
+        visible: true,
+        title: "Authentication Error",
+        message: msg,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <SafeAreaView className={`flex-1 ${isDark ? "bg-slate-950" : "bg-slate-50"}`}>
-      <ScrollView contentContainerClassName="flex-grow justify-center px-6 py-6 space-y-5">
-        <View className="items-center mb-2 space-y-1">
-          <View className="w-12 h-12 rounded-xl bg-blue-600 items-center justify-center shadow-md shadow-blue-500/30 mb-1">
-            <CheckSquare size={26} color="#ffffff" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? "#020617" : "#f8fafc" }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingHorizontal: 20, paddingVertical: 28 }}>
+        {/* Logo & Header Header */}
+        <View style={{ alignItems: "center", marginBottom: 20 }}>
+          <View
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: 18,
+              backgroundColor: "#2563eb",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 12,
+              elevation: 6,
+              shadowColor: "#2563eb",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.35,
+              shadowRadius: 10,
+            }}
+          >
+            <CheckSquare size={28} color="#ffffff" />
           </View>
-          <Text className={`text-2xl font-extrabold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: "800",
+              letterSpacing: -0.5,
+              color: isDark ? "#ffffff" : "#0f172a",
+              marginBottom: 4,
+            }}
+          >
             SmartTask
           </Text>
-          <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+          <Text
+            style={{
+              fontSize: 13,
+              lineHeight: 18,
+              color: isDark ? "#94a3b8" : "#64748b",
+              textAlign: "center",
+              maxWidth: 280,
+            }}
+          >
             Welcome back! Sign in to access your task dashboard.
           </Text>
         </View>
 
-        <View className="space-y-3">
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <AppInput
-                label="Email Address"
-                placeholder="name@example.com"
-                value={value}
-                onChangeText={onChange}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                error={errors.email?.message}
-                leftIcon={<Mail size={18} color={isDark ? "#94a3b8" : "#64748b"} />}
-              />
-            )}
-          />
+        {/* Modern Form Card */}
+        <AppCard style={{ padding: 22, borderRadius: 24 }}>
+          <View style={{ gap: 14 }}>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <AppInput
+                  label="Email Address"
+                  placeholder="name@example.com"
+                  value={value}
+                  onChangeText={onChange}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  error={errors.email?.message}
+                  leftIcon={<Mail size={18} color={isDark ? "#94a3b8" : "#64748b"} />}
+                />
+              )}
+            />
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, value } }) => (
-              <AppInput
-                label="Password"
-                placeholder="Enter password"
-                value={value}
-                onChangeText={onChange}
-                isPassword
-                error={errors.password?.message}
-                leftIcon={<Lock size={18} color={isDark ? "#94a3b8" : "#64748b"} />}
-              />
-            )}
-          />
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <AppInput
+                  label="Password"
+                  placeholder="Enter password"
+                  value={value}
+                  onChangeText={onChange}
+                  isPassword
+                  error={errors.password?.message}
+                  leftIcon={<Lock size={18} color={isDark ? "#94a3b8" : "#64748b"} />}
+                />
+              )}
+            />
 
-          <View className="flex-row justify-end py-1">
-            <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")}>
-              <Text className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                Forgot password?
-              </Text>
-            </TouchableOpacity>
+            <View style={{ alignItems: "flex-end", marginTop: -2, marginBottom: 2 }}>
+              <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password")} activeOpacity={0.7}>
+                <Text style={{ fontSize: 12, fontWeight: "700", color: "#2563eb" }}>
+                  Forgot password?
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <AppButton
+              title="Sign In"
+              onPress={handleSubmit(onSubmit)}
+              isLoading={isLoading}
+              size="lg"
+              style={{ marginTop: 4 }}
+            />
           </View>
+        </AppCard>
 
-          <AppButton title="Sign In" onPress={handleSubmit(onSubmit)} isLoading={isLoading} size="lg" />
-        </View>
-
-        <View className="flex-row items-center justify-center gap-1.5 pt-2">
-          <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+        {/* Footer Link */}
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 24 }}>
+          <Text style={{ fontSize: 13, color: isDark ? "#94a3b8" : "#64748b" }}>
             Don't have an account?
           </Text>
-          <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
-            <Text className="text-xs font-bold text-blue-600 dark:text-blue-400">
+          <TouchableOpacity onPress={() => router.push("/(auth)/signup")} activeOpacity={0.7}>
+            <Text style={{ fontSize: 13, fontWeight: "800", color: "#2563eb" }}>
               Create account
             </Text>
           </TouchableOpacity>
         </View>
+
+        {/* Alert Feedback Modal */}
+        <AppAlertModal
+          visible={alertConfig.visible}
+          type="error"
+          title={alertConfig.title}
+          message={alertConfig.message}
+          onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
+        />
       </ScrollView>
     </SafeAreaView>
   );
