@@ -1,9 +1,17 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  `${process.env.NEXT_PUBLIC_API_URL_BASE}${
-    process.env.NEXT_PUBLIC_API_PREFIX
-  }`;
+const getApiBaseUrl = () => {
+  const base = process.env.NEXT_PUBLIC_API_URL_BASE || "http://localhost:5000";
+  const prefix = process.env.NEXT_PUBLIC_API_PREFIX || "/api/v1";
+  if (base.endsWith("/api/v1") || base.endsWith(prefix)) return base;
+  return `${base.replace(/\/$/, "")}${prefix}`;
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+if (process.env.NODE_ENV !== "production") {
+  console.log(`[Frontend API Client] Connected to Base URL: ${API_BASE_URL}`);
+}
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

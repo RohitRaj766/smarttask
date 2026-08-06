@@ -36,6 +36,11 @@ export interface ResetPasswordPayload {
   newPassword?: string;
 }
 
+export interface ChangePasswordPayload {
+  oldPassword?: string;
+  newPassword?: string;
+}
+
 export const authApi = {
   signup: async (payload: SignupPayload): Promise<ISuccessResponse<{ userId: string; email: string }>> => {
     const response = await apiClient.post("/auth/signup", payload);
@@ -91,4 +96,10 @@ export const authApi = {
     const response = await apiClient.patch("/user/profile", payload);
     return response.data;
   },
+
+  changePassword: async (payload: ChangePasswordPayload): Promise<ISuccessResponse<object>> => {
+    const response = await apiClient.post("/user/change-password", payload);
+    return response.data;
+  },
 };
+
