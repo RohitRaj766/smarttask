@@ -40,16 +40,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    // Skip API calls on the public landing page (/)
+    if (pathname === "/") {
+      setIsLoading(false);
+      return;
+    }
     fetchCurrentUser();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (!isLoading) {
+      // Don't auto redirect on landing page (/)
+      if (pathname === "/") return;
+
       const isPublic = PUBLIC_ROUTES.includes(pathname);
       if (!user && !isPublic) {
         router.push("/login");
-      } else if (user && isPublic) {
-        router.push("/dashboard");
+      } else if (user && (pathname === "/login" || pathname === "/signup")) {
+        router.push("/overview");
       }
     }
   }, [user, isLoading, pathname, router]);
@@ -60,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (res.success) {
         setUser(res.data.user);
         toast.success("Welcome back!");
-        router.push("/dashboard");
+        router.push("/overview");
       }
     } catch (err: any) {
       const message = err?.response?.data?.message || "Invalid email or password";
@@ -75,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (res.success) {
         setUser(res.data.user);
         toast.success("Account created successfully!");
-        router.push("/dashboard");
+        router.push("/overview");
       }
     } catch (err: any) {
       const message = err?.response?.data?.message || "Failed to create account";
