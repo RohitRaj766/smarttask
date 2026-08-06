@@ -148,13 +148,24 @@ export const Navbar: React.FC = () => {
                 </button>
               </div>
 
-              {/* Mobile / Tablet Hamburger Toggle Button */}
+              {/* Mobile / Tablet Hamburger Toggle Button with Smooth Icon Swap */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                className="md:hidden relative p-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors flex items-center justify-center h-10 w-10"
                 aria-label="Toggle menu"
               >
-                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                <Menu
+                  className={cn(
+                    "h-6 w-6 transition-all duration-300 ease-in-out absolute",
+                    isMobileMenuOpen ? "rotate-90 opacity-0 scale-50" : "rotate-0 opacity-100 scale-100"
+                  )}
+                />
+                <X
+                  className={cn(
+                    "h-6 w-6 transition-all duration-300 ease-in-out absolute",
+                    isMobileMenuOpen ? "rotate-0 opacity-100 scale-100" : "-rotate-90 opacity-0 scale-50"
+                  )}
+                />
               </button>
             </>
           ) : (
@@ -175,18 +186,36 @@ export const Navbar: React.FC = () => {
           {!user && !isLoading && (
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="sm:hidden p-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              className="sm:hidden relative p-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors flex items-center justify-center h-10 w-10"
               aria-label="Toggle menu"
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              <Menu
+                className={cn(
+                  "h-6 w-6 transition-all duration-300 ease-in-out absolute",
+                  isMobileMenuOpen ? "rotate-90 opacity-0 scale-50" : "rotate-0 opacity-100 scale-100"
+                )}
+              />
+              <X
+                className={cn(
+                  "h-6 w-6 transition-all duration-300 ease-in-out absolute",
+                  isMobileMenuOpen ? "rotate-0 opacity-100 scale-100" : "-rotate-90 opacity-0 scale-50"
+                )}
+              />
             </button>
           )}
         </div>
       </div>
 
-      {/* Responsive Mobile / Tablet Hamburger Menu Panel */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-card p-4 space-y-4 shadow-xl animate-in slide-in-from-top-2 duration-200">
+      {/* Responsive Mobile / Tablet Hamburger Menu Panel with Smooth Open/Close Animation */}
+      <div
+        className={cn(
+          "md:hidden overflow-hidden transition-all duration-300 ease-in-out bg-card/95 backdrop-blur-md shadow-xl",
+          isMobileMenuOpen
+            ? "max-h-[350px] opacity-100 py-4 px-4 border-t border-border"
+            : "max-h-0 opacity-0 py-0 px-4 border-t-0"
+        )}
+      >
+        <div className="space-y-4">
           {user ? (
             <>
               {/* User Pill Info */}
@@ -200,7 +229,7 @@ export const Navbar: React.FC = () => {
                     closeMenu();
                     logout();
                   }}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-destructive bg-destructive/10 px-3 py-1.5 rounded-lg"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-destructive bg-destructive/10 px-3 py-1.5 rounded-lg active:scale-95 transition-transform"
                 >
                   <LogOut className="h-4 w-4" /> Logout
                 </button>
@@ -217,10 +246,10 @@ export const Navbar: React.FC = () => {
                       href={link.href}
                       onClick={closeMenu}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+                        "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200",
                         isActive
-                          ? "bg-primary/10 text-primary font-bold"
-                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                          ? "bg-primary/10 text-primary font-bold translate-x-1"
+                          : "text-muted-foreground hover:bg-accent hover:text-foreground hover:translate-x-1"
                       )}
                     >
                       <Icon className="h-5 w-5" />
@@ -245,7 +274,7 @@ export const Navbar: React.FC = () => {
             </div>
           )}
         </div>
-      )}
+      </div>
     </header>
   );
 };

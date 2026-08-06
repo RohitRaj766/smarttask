@@ -6,6 +6,7 @@ export interface IUserDocument extends Document {
   email: string;
   password?: string;
   tokenVersion: number;
+  isEmailVerified: boolean;
   isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;

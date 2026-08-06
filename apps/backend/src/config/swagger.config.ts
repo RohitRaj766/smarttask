@@ -6,7 +6,8 @@ const swaggerDocument = {
   info: {
     title: "SmartTask Management API",
     version: "1.0.0",
-    description: "Production-Ready RESTful API for Task Management Monorepo Application",
+    description:
+      "Production-Ready RESTful API for Task Management Monorepo Application with OTP Verification, Forgot Password, Resend Email Provider, and Task Reminder System",
   },
   servers: [
     {
@@ -44,8 +45,22 @@ const swaggerDocument = {
           _id: { type: "string" },
           name: { type: "string" },
           email: { type: "string" },
+          isEmailVerified: { type: "boolean" },
           createdAt: { type: "string" },
           updatedAt: { type: "string" },
+        },
+      },
+      Notification: {
+        type: "object",
+        properties: {
+          _id: { type: "string" },
+          userId: { type: "string" },
+          taskId: { type: "string" },
+          title: { type: "string" },
+          message: { type: "string" },
+          type: { type: "string", enum: ["EMAIL", "SYSTEM", "REMINDER"] },
+          isRead: { type: "boolean" },
+          createdAt: { type: "string" },
         },
       },
       Task: {
@@ -59,6 +74,7 @@ const swaggerDocument = {
           category: { type: "string", enum: ["WORK", "PERSONAL", "STUDY", "SHOPPING", "HEALTH", "OTHER"] },
           dueDate: { type: "string" },
           reminderAt: { type: "string" },
+          isReminderSent: { type: "boolean" },
           userId: { type: "string" },
           createdAt: { type: "string" },
           updatedAt: { type: "string" },
@@ -81,7 +97,7 @@ const swaggerDocument = {
     "/auth/signup": {
       post: {
         tags: ["Auth"],
-        summary: "Register new user",
+        summary: "Register new user (dispatches 6-digit OTP email)",
         requestBody: {
           required: true,
           content: {
@@ -98,13 +114,56 @@ const swaggerDocument = {
             },
           },
         },
-        responses: { 201: { description: "User registered successfully" } },
+        responses: { 201: { description: "User registered, OTP sent" } },
+      },
+    },
+    "/auth/verify-email": {
+      post: {
+        tags: ["Auth"],
+        summary: "Verify email using 6-digit OTP",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["email", "otp"],
+                properties: {
+                  email: { type: "string" },
+                  otp: { type: "string", example: "123456" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "Email verified & tokens issued" } },
+      },
+    },
+    "/auth/resend-otp": {
+      post: {
+        tags: ["Auth"],
+        summary: "Resend email verification 6-digit OTP",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["email"],
+                properties: {
+                  email: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "New OTP dispatched" } },
       },
     },
     "/auth/login": {
       post: {
         tags: ["Auth"],
-        summary: "User login",
+        summary: "User login (Requires verified email)",
         requestBody: {
           required: true,
           content: {
@@ -120,7 +179,73 @@ const swaggerDocument = {
             },
           },
         },
-        responses: { 200: { description: "Logged in successfully" } },
+        responses: { 200: { description: "Logged in successfully" }, 403: { description: "Email not verified" } },
+      },
+    },
+    "/auth/forgot-password": {
+      post: {
+        tags: ["Auth"],
+        summary: "Request password reset OTP email",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["email"],
+                properties: {
+                  email: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "Reset OTP sent if email exists" } },
+      },
+    },
+    "/auth/verify-reset-otp": {
+      post: {
+        tags: ["Auth"],
+        summary: "Verify password reset OTP",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["email", "otp"],
+                properties: {
+                  email: { type: "string" },
+                  otp: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "OTP verified" } },
+      },
+    },
+    "/auth/reset-password": {
+      post: {
+        tags: ["Auth"],
+        summary: "Reset password with OTP",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["email", "otp", "newPassword"],
+                properties: {
+                  email: { type: "string" },
+                  otp: { type: "string" },
+                  newPassword: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "Password reset successful" } },
       },
     },
     "/auth/logout": {
@@ -143,6 +268,31 @@ const swaggerDocument = {
         summary: "Get current user profile",
         security: [{ cookieAuth: [] }],
         responses: { 200: { description: "User profile" } },
+      },
+    },
+    "/notifications": {
+      get: {
+        tags: ["Notifications"],
+        summary: "Get user notifications list",
+        security: [{ cookieAuth: [] }],
+        responses: { 200: { description: "Notifications list" } },
+      },
+    },
+    "/notifications/read-all": {
+      patch: {
+        tags: ["Notifications"],
+        summary: "Mark all notifications as read",
+        security: [{ cookieAuth: [] }],
+        responses: { 200: { description: "All notifications marked read" } },
+      },
+    },
+    "/notifications/{id}/read": {
+      patch: {
+        tags: ["Notifications"],
+        summary: "Mark single notification as read",
+        security: [{ cookieAuth: [] }],
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+        responses: { 200: { description: "Notification marked read" } },
       },
     },
     "/enum": {

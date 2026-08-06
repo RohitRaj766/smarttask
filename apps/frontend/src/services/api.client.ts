@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+const API_BASE_URL =
+  `${process.env.NEXT_PUBLIC_API_URL_BASE}${
+    process.env.NEXT_PUBLIC_API_PREFIX
+  }`;
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -19,6 +22,11 @@ apiClient.interceptors.response.use(
       !originalRequest._retry &&
       !originalRequest.url?.includes("/auth/login") &&
       !originalRequest.url?.includes("/auth/signup") &&
+      !originalRequest.url?.includes("/auth/verify-email") &&
+      !originalRequest.url?.includes("/auth/resend-otp") &&
+      !originalRequest.url?.includes("/auth/forgot-password") &&
+      !originalRequest.url?.includes("/auth/verify-reset-otp") &&
+      !originalRequest.url?.includes("/auth/reset-password") &&
       !originalRequest.url?.includes("/auth/refresh-token") &&
       !originalRequest.url?.includes("/auth/me")
     ) {

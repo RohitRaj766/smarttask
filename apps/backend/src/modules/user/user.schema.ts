@@ -7,6 +7,7 @@ const userSchema = new Schema<IUserDocument>(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, select: false },
     tokenVersion: { type: Number, default: 0 },
+    isEmailVerified: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false, index: true },
   },
   { timestamps: true }

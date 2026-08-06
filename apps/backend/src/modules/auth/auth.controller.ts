@@ -9,9 +9,30 @@ export class AuthController {
 
   signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { user, accessToken, refreshToken } = await this.authService.signup(req.body);
+      const result = await this.authService.signup(req.body);
+      sendSuccessResponse(res, 201, result.message, {
+        userId: result.userId,
+        email: result.email,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  verifyEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { user, accessToken, refreshToken } = await this.authService.verifyEmail(req.body);
       setAuthCookies(res, accessToken, refreshToken);
-      sendSuccessResponse(res, 201, "User registered successfully", { user });
+      sendSuccessResponse(res, 200, "Email verified successfully", { user });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  resendOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.authService.resendOtp(req.body);
+      sendSuccessResponse(res, 200, result.message);
     } catch (error) {
       next(error);
     }
@@ -22,6 +43,33 @@ export class AuthController {
       const { user, accessToken, refreshToken } = await this.authService.login(req.body);
       setAuthCookies(res, accessToken, refreshToken);
       sendSuccessResponse(res, 200, "Logged in successfully", { user });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.authService.forgotPassword(req.body);
+      sendSuccessResponse(res, 200, result.message);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  verifyResetOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.authService.verifyResetOtp(req.body);
+      sendSuccessResponse(res, 200, result.message);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.authService.resetPassword(req.body);
+      sendSuccessResponse(res, 200, result.message);
     } catch (error) {
       next(error);
     }

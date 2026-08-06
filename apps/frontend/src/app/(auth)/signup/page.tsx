@@ -50,11 +50,14 @@ export default function SignupPage() {
   const onSubmit = async (data: SignupFormValues) => {
     try {
       setIsSubmitting(true);
-      await signup({
+      const res = await signup({
         name: data.name,
         email: data.email,
         password: data.password,
       });
+      if (res?.email) {
+        router.push(`/verify-email?email=${encodeURIComponent(res.email)}`);
+      }
     } catch {
       // Handled by context/interceptor
     } finally {
