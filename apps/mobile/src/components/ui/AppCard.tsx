@@ -17,7 +17,7 @@ export const AppCard: React.FC<AppCardProps> = ({
   const { isDark } = useTheme();
 
   let bg = isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200/80";
-  let shadow = variant === "default" ? "shadow-sm" : "";
+  let shadow = "";
 
   return (
     <View

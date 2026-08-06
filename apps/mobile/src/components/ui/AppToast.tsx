@@ -114,7 +114,7 @@ export const AppToast: React.FC<AppToastProps> = ({
       }}
     >
       <View
-        className={`flex-row items-center justify-between p-3.5 rounded-2xl border border-l-4 shadow-xl ${config.accentColor} ${
+        className={`flex-row items-center justify-between p-3.5 rounded-2xl border border-l-4 ${config.accentColor} ${
           isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-100"
         }`}
       >

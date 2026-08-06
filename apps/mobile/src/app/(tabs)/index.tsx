@@ -128,7 +128,7 @@ export default function DashboardScreen() {
         {/* Header Greeting Banner */}
         <View className="flex-row items-center justify-between pt-2 pb-1">
           <View className="flex-row items-center gap-3">
-            <View className="w-11 h-11 rounded-xl bg-blue-600 items-center justify-center shadow-sm">
+            <View className="w-11 h-11 rounded-xl bg-blue-600 items-center justify-center">
               <Text className="text-base font-black text-white">{getInitials(user?.name)}</Text>
             </View>
             <View>
@@ -218,7 +218,7 @@ export default function DashboardScreen() {
         </View>
 
         {/* Quick Tips Box */}
-        <AppCard className={`p-4 space-y-3.5 mt-4 rounded-2xl border-l-4 border-l-amber-500 shadow-sm ${
+        <AppCard className={`p-4 space-y-3.5 mt-4 rounded-2xl border-l-4 border-l-amber-500 ${
           isDark
             ? "bg-slate-900 border-slate-800"
             : "bg-blue-50/80 border-blue-200/80"

@@ -173,7 +173,7 @@ export default function TasksScreen() {
 
           <TouchableOpacity
             onPress={() => router.push("/tasks/new")}
-            className="w-11 h-11 rounded-2xl bg-blue-600 items-center justify-center shadow-md shadow-blue-500/30"
+            className="w-11 h-11 rounded-2xl bg-blue-600 items-center justify-center"
           >
             <Plus size={22} color="#ffffff" />
           </TouchableOpacity>
@@ -290,23 +290,30 @@ export default function TasksScreen() {
           }
           ListFooterComponent={
             meta.total > 0 ? (
-              <View className="py-4 space-y-3.5 border-t border-slate-200/60 dark:border-slate-800/80 mt-2">
-                {/* Info Text & Prev/Next Controls */}
+              <View className={`mt-6 p-4 rounded-3xl border ${isDark ? "bg-slate-900/60 border-slate-800" : "bg-white border-slate-200/80"} space-y-4`}>
+                {/* Header row: Status & Prev/Next */}
                 <View className="flex-row items-center justify-between">
-                  <Text className={`text-xs font-semibold ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-                    Page {meta.page} of {meta.totalPages} ({meta.total} total)
-                  </Text>
+                  <View className="flex-row items-center gap-2">
+                    <View className="w-2 h-2 rounded-full bg-blue-600" />
+                    <Text className={`text-xs font-bold ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                      Page <Text className="font-black text-blue-600">{meta.page}</Text> of {meta.totalPages}
+                    </Text>
+                    <Text className={`text-[11px] font-medium ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                      ({meta.total} tasks)
+                    </Text>
+                  </View>
 
                   <View className="flex-row items-center gap-2">
                     <TouchableOpacity
                       onPress={handlePrevPage}
                       disabled={currentPage <= 1}
-                      className={`flex-row items-center gap-1 px-3 py-2 rounded-xl border ${
+                      activeOpacity={0.7}
+                      className={`flex-row items-center gap-1 px-3 py-2 rounded-2xl border ${
                         currentPage <= 1
-                          ? "opacity-40 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900"
+                          ? "opacity-30 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900"
                           : isDark
-                          ? "bg-slate-900 border-slate-700"
-                          : "bg-white border-slate-200"
+                          ? "bg-slate-800 border-slate-700 active:bg-slate-700"
+                          : "bg-slate-100 border-slate-200 active:bg-slate-200"
                       }`}
                     >
                       <ChevronLeft size={16} color={isDark ? "#e2e8f0" : "#334155"} />
@@ -318,12 +325,13 @@ export default function TasksScreen() {
                     <TouchableOpacity
                       onPress={handleNextPage}
                       disabled={currentPage >= meta.totalPages}
-                      className={`flex-row items-center gap-1 px-3 py-2 rounded-xl border ${
+                      activeOpacity={0.7}
+                      className={`flex-row items-center gap-1 px-3 py-2 rounded-2xl border ${
                         currentPage >= meta.totalPages
-                          ? "opacity-40 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900"
+                          ? "opacity-30 border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900"
                           : isDark
-                          ? "bg-slate-900 border-slate-700"
-                          : "bg-white border-slate-200"
+                          ? "bg-slate-800 border-slate-700 active:bg-slate-700"
+                          : "bg-slate-100 border-slate-200 active:bg-slate-200"
                       }`}
                     >
                       <Text className={`text-xs font-bold ${isDark ? "text-slate-200" : "text-slate-700"}`}>
@@ -334,14 +342,17 @@ export default function TasksScreen() {
                   </View>
                 </View>
 
-                {/* Direct Page Number Selector Pills (1..N) */}
+                {/* Direct Page Number Quick Selector (if more than 1 page) */}
                 {meta.totalPages > 1 ? (
-                  <View style={{ marginTop: 12, paddingTop: 4 }}>
-                    <Text style={{ fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8, color: isDark ? "#94a3b8" : "#64748b" }}>
-                      Jump to Page
-                    </Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: "row", paddingVertical: 4 }}>
-                      <View style={{ flexDirection: "row", gap: 10 }}>
+                  <View className="pt-2 border-t border-slate-100 dark:border-slate-800/60">
+                    <View className="flex-row items-center justify-between mb-2">
+                      <Text className={`text-[10px] font-extrabold uppercase tracking-wider ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                        Jump to Page
+                      </Text>
+                    </View>
+
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row py-1">
+                      <View className="flex-row items-center gap-2">
                         {Array.from({ length: meta.totalPages }).map((_, idx) => {
                           const pageNum = idx + 1;
                           const isCurrent = pageNum === currentPage;
@@ -350,28 +361,18 @@ export default function TasksScreen() {
                               key={`page-${pageNum}`}
                               onPress={() => setParams((prev) => ({ ...prev, page: pageNum }))}
                               activeOpacity={0.7}
-                              style={{
-                                width: 42,
-                                height: 42,
-                                borderRadius: 14,
-                                alignItems: "center",
-                                justifyContent: "center",
-                                borderWidth: 1,
-                                backgroundColor: isCurrent ? "#2563eb" : isDark ? "#0f172a" : "#ffffff",
-                                borderColor: isCurrent ? "#2563eb" : isDark ? "#1e293b" : "#e2e8f0",
-                                shadowColor: isCurrent ? "#2563eb" : "#000000",
-                                shadowOffset: { width: 0, height: 2 },
-                                shadowOpacity: isCurrent ? 0.3 : 0.05,
-                                shadowRadius: 4,
-                                elevation: isCurrent ? 3 : 1,
-                              }}
+                              className={`w-10 h-10 rounded-2xl items-center justify-center border transition-all ${
+                                isCurrent
+                                  ? "bg-blue-600 border-blue-600"
+                                  : isDark
+                                  ? "bg-slate-950 border-slate-800 active:bg-slate-800"
+                                  : "bg-slate-50 border-slate-200 active:bg-slate-100"
+                              }`}
                             >
                               <Text
-                                style={{
-                                  fontSize: 13,
-                                  fontWeight: "800",
-                                  color: isCurrent ? "#ffffff" : isDark ? "#cbd5e1" : "#334155",
-                                }}
+                                className={`text-xs font-black ${
+                                  isCurrent ? "text-white" : isDark ? "text-slate-300" : "text-slate-700"
+                                }`}
                               >
                                 {pageNum}
                               </Text>

@@ -1,0 +1,6 @@
+{
+  "name": "react-native-worklets",
+  "version": "1.3.3",
+  "description": "Stub - satisfies react-native-css-interop babel plugin require without native C++ compilation",
+  "main": "index.js"
+}

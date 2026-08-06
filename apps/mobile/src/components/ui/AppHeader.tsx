@@ -49,7 +49,6 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                 marginRight: 4,
                 elevation: 2,
                 shadowColor: "#2563eb",
-                shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.3,
                 shadowRadius: 4,
               }}

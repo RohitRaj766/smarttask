@@ -115,7 +115,6 @@ export default function SignupScreen() {
               marginBottom: 12,
               elevation: 6,
               shadowColor: "#2563eb",
-              shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.35,
               shadowRadius: 10,
             }}
