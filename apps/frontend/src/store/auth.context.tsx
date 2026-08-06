@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const isPublic = PUBLIC_ROUTES.includes(pathname);
       if (!user && !isPublic) {
-        router.push("/login");
+        router.push("/");
       } else if (user && (pathname === "/login" || pathname === "/signup" || pathname === "/verify-email")) {
         router.push("/overview");
       }
@@ -128,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setUser(null);
       toast.success("Logged out successfully");
-      router.push("/login");
+      router.push("/");
     }
   };
 

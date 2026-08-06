@@ -13,11 +13,19 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { KeyRound, Lock, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 
+const strongPasswordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Must contain at least one lowercase letter")
+  .regex(/[0-9]/, "Must contain at least one number")
+  .regex(/[^A-Za-z0-9]/, "Must contain at least one special character (!@#$%^&*)");
+
 const resetPasswordSchema = z
   .object({
     email: z.string().email("Invalid email address"),
     otp: z.string().length(6, "OTP must be exactly 6 digits"),
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+    newPassword: strongPasswordSchema,
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
