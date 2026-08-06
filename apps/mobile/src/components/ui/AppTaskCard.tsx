@@ -50,23 +50,30 @@ export const AppTaskCard: React.FC<AppTaskCardProps> = ({
   };
 
   return (
-    <TouchableOpacity activeOpacity={0.85} onPress={onPress} className="mb-3">
-      <AppCard className="p-4 space-y-3">
-        <View className="flex-row items-start justify-between gap-2">
-          <View className="flex-1 pr-2 space-y-1">
+    <TouchableOpacity activeOpacity={0.85} onPress={onPress} style={{ marginBottom: 12 }}>
+      <AppCard style={{ padding: 16 }}>
+        <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+          <View style={{ flex: 1, paddingRight: 8 }}>
             <Text
-              className={`text-base font-bold leading-snug ${
-                isDark ? "text-white" : "text-slate-900"
-              }`}
               numberOfLines={2}
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                lineHeight: 22,
+                color: isDark ? "#ffffff" : "#0f172a",
+                marginBottom: task.description ? 4 : 0,
+              }}
             >
               {task.title}
             </Text>
 
             {task.description ? (
               <Text
-                className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}
                 numberOfLines={2}
+                style={{
+                  fontSize: 12,
+                  color: isDark ? "#94a3b8" : "#64748b",
+                }}
               >
                 {task.description}
               </Text>
@@ -74,31 +81,43 @@ export const AppTaskCard: React.FC<AppTaskCardProps> = ({
           </View>
 
           {onMorePress && (
-            <TouchableOpacity onPress={onMorePress} className="p-1 rounded-lg">
+            <TouchableOpacity onPress={onMorePress} activeOpacity={0.7} style={{ padding: 4, borderRadius: 8 }}>
               <MoreVertical size={18} color={isDark ? "#94a3b8" : "#64748b"} />
             </TouchableOpacity>
           )}
         </View>
 
-        <View className="flex-row flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-          <View className="flex-row items-center gap-1.5">
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 8,
+            paddingTop: 10,
+            marginTop: 10,
+            borderTopWidth: 1,
+            borderTopColor: isDark ? "#1e293b" : "#f1f5f9",
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             <AppBadge label={task.category} variant="outline" size="sm" />
             <AppBadge label={task.priority} variant={getPriorityVariant(task.priority)} size="sm" />
             <AppBadge label={task.status} variant={getStatusVariant(task.status)} size="sm" />
           </View>
 
-          <View className="flex-row items-center gap-3">
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
             {task.dueDate && (
-              <View className="flex-row items-center gap-1">
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <Calendar size={12} color={isDark ? "#94a3b8" : "#64748b"} />
-                <Text className={`text-[11px] font-medium ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                <Text style={{ fontSize: 11, fontWeight: "500", color: isDark ? "#94a3b8" : "#64748b" }}>
                   {formatDate(task.dueDate)}
                 </Text>
               </View>
             )}
 
             {task.reminderAt && (
-              <View className="flex-row items-center gap-1">
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <Bell size={12} color="#f59e0b" />
               </View>
             )}

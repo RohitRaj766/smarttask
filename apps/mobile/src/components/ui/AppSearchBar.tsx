@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, TextInput, TouchableOpacity } from "react-native";
 import { Search, X } from "lucide-react-native";
 import { useTheme } from "../../theme/theme.context";
@@ -8,6 +8,7 @@ export interface AppSearchBarProps {
   onChangeText: (text: string) => void;
   placeholder?: string;
   onClear?: () => void;
+  debounceMs?: number;
 }
 
 export const AppSearchBar: React.FC<AppSearchBarProps> = ({
@@ -15,34 +16,78 @@ export const AppSearchBar: React.FC<AppSearchBarProps> = ({
   onChangeText,
   placeholder = "Search tasks...",
   onClear,
+  debounceMs = 400,
 }) => {
   const { isDark } = useTheme();
+  const [internalValue, setInternalValue] = useState(value);
+  const isFirstRender = useRef(true);
+
+  // Sync internal value if external value changes (e.g., reset filters)
+  useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
+
+  // Debounce API calls on keystrokes
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (internalValue !== value) {
+        onChangeText(internalValue);
+      }
+    }, debounceMs);
+
+    return () => clearTimeout(timer);
+  }, [internalValue, debounceMs, onChangeText, value]);
+
+  const handleClear = () => {
+    setInternalValue("");
+    onChangeText("");
+    onClear?.();
+  };
 
   return (
     <View
-      className={`flex-row items-center px-3.5 py-2.5 rounded-xl border ${
-        isDark ? "bg-slate-900 border-slate-800" : "bg-slate-100 border-slate-200/80"
-      }`}
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        borderRadius: 12,
+        borderWidth: 1,
+        backgroundColor: isDark ? "#0f172a" : "#f1f5f9",
+        borderColor: isDark ? "#1e293b" : "#e2e8f0",
+      }}
     >
-      <Search size={18} color={isDark ? "#94a3b8" : "#64748b"} className="mr-2" />
+      <Search size={18} color={isDark ? "#94a3b8" : "#64748b"} style={{ marginRight: 8 }} />
 
       <TextInput
-        value={value}
-        onChangeText={onChangeText}
+        value={internalValue}
+        onChangeText={setInternalValue}
         placeholder={placeholder}
         placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
-        className={`flex-1 text-sm font-medium ${isDark ? "text-white" : "text-slate-900"}`}
+        style={{
+          flex: 1,
+          fontSize: 14,
+          fontWeight: "500",
+          color: isDark ? "#ffffff" : "#0f172a",
+        }}
       />
 
-      {value.length > 0 && (
+      {internalValue.length > 0 && (
         <TouchableOpacity
-          onPress={() => {
-            onChangeText("");
-            onClear?.();
+          onPress={handleClear}
+          activeOpacity={0.7}
+          style={{
+            padding: 4,
+            borderRadius: 20,
+            backgroundColor: isDark ? "#1e293b" : "#cbd5e1",
           }}
-          className="p-1 rounded-full bg-slate-200 dark:bg-slate-800"
         >
-          <X size={14} color={isDark ? "#cbd5e1" : "#64748b"} />
+          <X size={14} color={isDark ? "#cbd5e1" : "#475569"} />
         </TouchableOpacity>
       )}
     </View>

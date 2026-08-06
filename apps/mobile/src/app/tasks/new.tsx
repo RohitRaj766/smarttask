@@ -9,8 +9,11 @@ import { useCreateTask } from "../../hooks/useTasks";
 import { AppHeader } from "../../components/ui/AppHeader";
 import { AppInput } from "../../components/ui/AppInput";
 import { AppButton } from "../../components/ui/AppButton";
+import { AppCard } from "../../components/ui/AppCard";
+import { AppDatePicker } from "../../components/ui/AppDatePicker";
+import { AppAlertModal } from "../../components/ui/AppAlertModal";
 import { TaskStatus, TaskPriority, TaskCategory } from "../../types";
-import { Sparkles, FileText, Sliders, Calendar } from "lucide-react-native";
+import { FileText, Sliders, Calendar, CheckSquare } from "lucide-react-native";
 
 const createTaskSchema = z.object({
   title: z.string().min(1, "Title is required").max(150, "Title must be under 150 characters"),
@@ -52,6 +55,26 @@ export default function CreateTaskScreen() {
   const selectedPriority = watch("priority");
   const selectedCategory = watch("category");
 
+  const formatLabel = (str: string) => {
+    return str
+      .replace(/_/g, " ")
+      .toLowerCase()
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    type: "success" | "error";
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({
+    visible: false,
+    type: "success",
+    title: "",
+    message: "",
+  });
+
   const onSubmit = async (data: TaskFormValues) => {
     try {
       await createTaskMutation.mutateAsync({
@@ -59,142 +82,196 @@ export default function CreateTaskScreen() {
         dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : null,
         reminderAt: data.reminderAt ? new Date(data.reminderAt).toISOString() : null,
       });
-      Alert.alert("Success", "Task created successfully!");
-      router.back();
+      router.replace("/(tabs)/tasks");
     } catch (err: any) {
-      Alert.alert("Error", err?.response?.data?.message || "Failed to create task");
+      setAlertConfig({
+        visible: true,
+        type: "error",
+        title: "Creation Error",
+        message: err?.response?.data?.message || err?.message || "Failed to create task",
+      });
     }
   };
 
   return (
     <View className={`flex-1 ${isDark ? "bg-slate-950" : "bg-slate-50"}`}>
-      <AppHeader title="Create New Task" subtitle="Define objectives, status & reminders" showBack />
+      <AppHeader title="Create New Task" subtitle="Define objectives, priority & reminders" showBack />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} className="px-4 py-4 space-y-6">
-        {/* Section 1: Basic Details */}
-        <View className="space-y-3">
-          <View className="flex-row items-center gap-2 pb-1 border-b border-slate-200/50 dark:border-slate-800">
-            <FileText size={16} color="#2563eb" />
-            <Text className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-white" : "text-slate-900"}`}>
-              Task Basics
+      <ScrollView contentContainerStyle={{ paddingBottom: 50 }} className="px-4 py-4 space-y-4">
+        {/* Section 1: Basic Details Card */}
+        <AppCard className="p-4 mb-4">
+          <View className="flex-row items-center gap-2.5 pb-2.5 mb-4 border-b border-slate-100 dark:border-slate-800">
+            <View className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60">
+              <FileText size={16} color="#2563eb" />
+            </View>
+            <Text className={`text-sm font-extrabold ${isDark ? "text-white" : "text-slate-900"}`}>
+              Task Details
             </Text>
           </View>
 
-          <Controller
-            control={control}
-            name="title"
-            render={({ field: { onChange, value } }) => (
-              <AppInput
-                label="Task Title *"
-                placeholder="e.g. Implement mobile authentication flow"
-                value={value}
-                onChangeText={onChange}
-                error={errors.title?.message}
-              />
-            )}
-          />
+          <View className="space-y-4">
+            <Controller
+              control={control}
+              name="title"
+              render={({ field: { onChange, value } }) => (
+                <View className="mb-3">
+                  <AppInput
+                    label="Task Title *"
+                    placeholder="e.g. Implement mobile authentication flow"
+                    value={value}
+                    onChangeText={onChange}
+                    error={errors.title?.message}
+                  />
+                </View>
+              )}
+            />
 
-          <Controller
-            control={control}
-            name="description"
-            render={({ field: { onChange, value } }) => (
-              <AppInput
-                label="Description"
-                placeholder="Provide detailed instructions or context..."
-                value={value}
-                onChangeText={onChange}
-                multiline
-                numberOfLines={4}
-                style={{ height: 90, textAlignVertical: "top" }}
-              />
-            )}
-          />
-        </View>
+            <Controller
+              control={control}
+              name="description"
+              render={({ field: { onChange, value } }) => (
+                <View className="mb-1">
+                  <AppInput
+                    label="Description"
+                    placeholder="Provide detailed instructions or context..."
+                    value={value}
+                    onChangeText={onChange}
+                    multiline
+                    numberOfLines={4}
+                    style={{ height: 85, textAlignVertical: "top" }}
+                  />
+                </View>
+              )}
+            />
+          </View>
+        </AppCard>
 
-        {/* Section 2: Classification */}
-        <View className="space-y-3">
-          <View className="flex-row items-center gap-2 pb-1 border-b border-slate-200/50 dark:border-slate-800">
-            <Sliders size={16} color="#2563eb" />
-            <Text className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-white" : "text-slate-900"}`}>
-              Classification & Priority
+        {/* Section 2: Classification & Priority Card */}
+        <AppCard className="p-4 mb-4">
+          <View className="flex-row items-center gap-2.5 pb-2.5 mb-4 border-b border-slate-100 dark:border-slate-800">
+            <View className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60">
+              <Sliders size={16} color="#d97706" />
+            </View>
+            <Text className={`text-sm font-extrabold ${isDark ? "text-white" : "text-slate-900"}`}>
+              Status & Classification
             </Text>
           </View>
 
-          <Text className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-            Status
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {Object.values(TaskStatus).map((s) => (
-              <TouchableOpacity
-                key={s}
-                onPress={() => setValue("status", s)}
-                className={`px-3 py-1.5 rounded-full border ${
-                  selectedStatus === s
-                    ? "bg-blue-600 border-blue-600"
-                    : isDark
-                    ? "bg-slate-900 border-slate-800"
-                    : "bg-white border-slate-200"
-                }`}
-              >
-                <Text className={`text-xs font-bold ${selectedStatus === s ? "text-white" : isDark ? "text-slate-300" : "text-slate-700"}`}>
-                  {s}
-                </Text>
-              </TouchableOpacity>
-            ))}
+          {/* Status Selection */}
+          <View className="mb-4">
+            <Text className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+              Status
+            </Text>
+            <View className="flex-row flex-wrap gap-2">
+              {Object.values(TaskStatus).map((s) => {
+                const isActive = selectedStatus === s;
+                let bgActive = "bg-blue-600 border-blue-600";
+                if (s === TaskStatus.COMPLETED) bgActive = "bg-emerald-600 border-emerald-600";
+                if (s === TaskStatus.IN_PROGRESS) bgActive = "bg-amber-600 border-amber-600";
+
+                return (
+                  <TouchableOpacity
+                    key={s}
+                    onPress={() => setValue("status", s)}
+                    className={`px-3 py-2 rounded-xl border ${
+                      isActive
+                        ? bgActive
+                        : isDark
+                        ? "bg-slate-800/80 border-slate-700/80"
+                        : "bg-slate-100/70 border-slate-200"
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${
+                        isActive ? "text-white" : isDark ? "text-slate-300" : "text-slate-700"
+                      }`}
+                    >
+                      {formatLabel(s)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
 
-          <Text className={`text-xs font-bold uppercase tracking-wider pt-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-            Priority
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {Object.values(TaskPriority).map((p) => (
-              <TouchableOpacity
-                key={p}
-                onPress={() => setValue("priority", p)}
-                className={`px-3 py-1.5 rounded-full border ${
-                  selectedPriority === p
-                    ? "bg-amber-600 border-amber-600"
-                    : isDark
-                    ? "bg-slate-900 border-slate-800"
-                    : "bg-white border-slate-200"
-                }`}
-              >
-                <Text className={`text-xs font-bold ${selectedPriority === p ? "text-white" : isDark ? "text-slate-300" : "text-slate-700"}`}>
-                  {p}
-                </Text>
-              </TouchableOpacity>
-            ))}
+          {/* Priority Selection */}
+          <View className="mb-4">
+            <Text className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+              Priority Level
+            </Text>
+            <View className="flex-row flex-wrap gap-2">
+              {Object.values(TaskPriority).map((p) => {
+                const isActive = selectedPriority === p;
+                let bgActive = "bg-slate-600 border-slate-600";
+                if (p === TaskPriority.HIGH) bgActive = "bg-red-600 border-red-600";
+                if (p === TaskPriority.MEDIUM) bgActive = "bg-amber-600 border-amber-600";
+
+                return (
+                  <TouchableOpacity
+                    key={p}
+                    onPress={() => setValue("priority", p)}
+                    className={`px-3.5 py-2 rounded-xl border ${
+                      isActive
+                        ? bgActive
+                        : isDark
+                        ? "bg-slate-800/80 border-slate-700/80"
+                        : "bg-slate-100/70 border-slate-200"
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${
+                        isActive ? "text-white" : isDark ? "text-slate-300" : "text-slate-700"
+                      }`}
+                    >
+                      {formatLabel(p)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
 
-          <Text className={`text-xs font-bold uppercase tracking-wider pt-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-            Category
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {Object.values(TaskCategory).map((c) => (
-              <TouchableOpacity
-                key={c}
-                onPress={() => setValue("category", c)}
-                className={`px-3 py-1.5 rounded-full border ${
-                  selectedCategory === c
-                    ? "bg-blue-600 border-blue-600"
-                    : isDark
-                    ? "bg-slate-900 border-slate-800"
-                    : "bg-white border-slate-200"
-                }`}
-              >
-                <Text className={`text-xs font-bold ${selectedCategory === c ? "text-white" : isDark ? "text-slate-300" : "text-slate-700"}`}>
-                  {c}
-                </Text>
-              </TouchableOpacity>
-            ))}
+          {/* Category Selection */}
+          <View className="mb-1">
+            <Text className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+              Category
+            </Text>
+            <View className="flex-row flex-wrap gap-2">
+              {Object.values(TaskCategory).map((c) => {
+                const isActive = selectedCategory === c;
+                return (
+                  <TouchableOpacity
+                    key={c}
+                    onPress={() => setValue("category", c)}
+                    className={`px-3 py-2 rounded-xl border ${
+                      isActive
+                        ? "bg-blue-600 border-blue-600"
+                        : isDark
+                        ? "bg-slate-800/80 border-slate-700/80"
+                        : "bg-slate-100/70 border-slate-200"
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${
+                        isActive ? "text-white" : isDark ? "text-slate-300" : "text-slate-700"
+                      }`}
+                    >
+                      {formatLabel(c)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
-        </View>
+        </AppCard>
 
-        {/* Section 3: Scheduling */}
-        <View className="space-y-3">
-          <View className="flex-row items-center gap-2 pb-1 border-b border-slate-200/50 dark:border-slate-800">
-            <Calendar size={16} color="#2563eb" />
-            <Text className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-white" : "text-slate-900"}`}>
+        {/* Section 3: Schedule & Reminders Card */}
+        <AppCard className="p-4 mb-4">
+          <View className="flex-row items-center gap-2.5 pb-2.5 mb-4 border-b border-slate-100 dark:border-slate-800">
+            <View className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60">
+              <Calendar size={16} color="#10b981" />
+            </View>
+            <Text className={`text-sm font-extrabold ${isDark ? "text-white" : "text-slate-900"}`}>
               Schedule & Reminders
             </Text>
           </View>
@@ -203,12 +280,15 @@ export default function CreateTaskScreen() {
             control={control}
             name="dueDate"
             render={({ field: { onChange, value } }) => (
-              <AppInput
-                label="Due Date (YYYY-MM-DD)"
-                placeholder="2026-08-15"
-                value={value}
-                onChangeText={onChange}
-              />
+              <View className="mb-4">
+                <AppDatePicker
+                  label="Due Date"
+                  placeholder="Select due date"
+                  mode="date"
+                  value={value}
+                  onChange={onChange}
+                />
+              </View>
             )}
           />
 
@@ -216,24 +296,48 @@ export default function CreateTaskScreen() {
             control={control}
             name="reminderAt"
             render={({ field: { onChange, value } }) => (
-              <AppInput
-                label="Reminder Timestamp (YYYY-MM-DD HH:mm)"
-                placeholder="2026-08-15 09:30"
-                value={value}
-                onChangeText={onChange}
-              />
+              <View className="mb-1">
+                <AppDatePicker
+                  label="Reminder Timestamp"
+                  placeholder="Select reminder date & time"
+                  mode="datetime"
+                  value={value}
+                  onChange={onChange}
+                />
+              </View>
             )}
           />
-        </View>
+        </AppCard>
 
-        <AppButton
-          title="Save Task"
-          onPress={handleSubmit(onSubmit)}
-          isLoading={createTaskMutation.isPending}
-          size="lg"
-          className="mt-4"
-        />
+        {/* Submit Button */}
+        <View className="pt-2">
+          <AppButton
+            title="Create Task"
+            onPress={handleSubmit(onSubmit)}
+            isLoading={createTaskMutation.isPending}
+            size="lg"
+            leftIcon={<CheckSquare size={18} color="#ffffff" />}
+          />
+        </View>
       </ScrollView>
+
+      {/* Modern Alert Modal */}
+      {alertConfig.visible && (
+        <AppAlertModal
+          visible={alertConfig.visible}
+          type={alertConfig.type}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          onClose={() => setAlertConfig((prev) => ({ ...prev, visible: false }))}
+          onConfirm={() => {
+            if (alertConfig.onConfirm) {
+              alertConfig.onConfirm();
+            } else {
+              setAlertConfig((prev) => ({ ...prev, visible: false }));
+            }
+          }}
+        />
+      )}
     </View>
   );
 }

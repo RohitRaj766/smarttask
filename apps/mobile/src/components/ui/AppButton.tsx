@@ -34,70 +34,92 @@ export const AppButton: React.FC<AppButtonProps> = ({
     switch (variant) {
       case "secondary":
         return {
-          bg: isDark ? "bg-slate-800" : "bg-slate-100",
           backgroundColor: isDark ? "#1e293b" : "#f1f5f9",
           textColor: isDark ? "#e2e8f0" : "#1e293b",
+          borderColor: isDark ? "#334155" : "#e2e8f0",
+          borderWidth: 1,
         };
       case "outline":
         return {
-          bg: isDark ? "border border-slate-700 bg-transparent" : "border border-slate-200 bg-transparent",
           backgroundColor: "transparent",
           textColor: isDark ? "#f1f5f9" : "#0f172a",
+          borderColor: isDark ? "#334155" : "#cbd5e1",
+          borderWidth: 1,
         };
       case "danger":
         return {
-          bg: "bg-red-600",
           backgroundColor: "#dc2626",
           textColor: "#ffffff",
+          borderColor: "#dc2626",
+          borderWidth: 0,
         };
       case "ghost":
         return {
-          bg: "bg-transparent",
           backgroundColor: "transparent",
           textColor: isDark ? "#cbd5e1" : "#475569",
+          borderColor: "transparent",
+          borderWidth: 0,
         };
       case "primary":
       default:
         return {
-          bg: "bg-blue-600",
           backgroundColor: "#2563eb",
           textColor: "#ffffff",
+          borderColor: "#2563eb",
+          borderWidth: 0,
         };
     }
   };
 
   const vStyles = getVariantStyles();
 
-  const getPaddingClass = () => {
-    if (size === "sm") return "px-3 py-2";
-    if (size === "lg") return "px-5 py-3.5";
-    return "px-4 py-3";
+  const getPadding = () => {
+    if (size === "sm") return { paddingHorizontal: 12, paddingVertical: 8 };
+    if (size === "lg") return { paddingHorizontal: 20, paddingVertical: 14 };
+    return { paddingHorizontal: 16, paddingVertical: 12 };
   };
 
-  const getFontSizeClass = () => {
-    if (size === "sm") return "text-xs";
-    if (size === "lg") return "text-base";
-    return "text-sm";
+  const getFontSize = () => {
+    if (size === "sm") return 12;
+    if (size === "lg") return 16;
+    return 14;
   };
+
+  const pad = getPadding();
 
   return (
     <TouchableOpacity
       activeOpacity={0.8}
       disabled={disabled || isLoading}
-      className={`flex-row items-center justify-center rounded-xl transition-all ${getPaddingClass()} ${vStyles.bg} ${
-        disabled || isLoading ? "opacity-50" : ""
-      }`}
-      style={[{ backgroundColor: vStyles.backgroundColor }, style]}
+      style={[
+        {
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: 12,
+          paddingHorizontal: pad.paddingHorizontal,
+          paddingVertical: pad.paddingVertical,
+          backgroundColor: vStyles.backgroundColor,
+          borderColor: vStyles.borderColor,
+          borderWidth: vStyles.borderWidth,
+          opacity: disabled || isLoading ? 0.5 : 1,
+        },
+        style,
+      ]}
       {...props}
     >
       {isLoading ? (
         <ActivityIndicator color={vStyles.textColor} />
       ) : (
-        <View className="flex-row items-center justify-center gap-2">
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}>
           {leftIcon}
           <Text
-            className={`font-semibold text-center ${getFontSizeClass()}`}
-            style={{ color: vStyles.textColor }}
+            style={{
+              fontSize: getFontSize(),
+              fontWeight: "600",
+              textAlign: "center",
+              color: vStyles.textColor,
+            }}
           >
             {title}
           </Text>

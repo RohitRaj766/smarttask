@@ -22,31 +22,70 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   const { isDark } = useTheme();
 
   return (
-    <SafeAreaView edges={["top"]} className={isDark ? "bg-slate-950" : "bg-slate-50"}>
-      <View className="px-4 py-3 flex-row items-center justify-between border-b border-slate-200/50 dark:border-slate-800/80">
-        <View className="flex-row items-center gap-2 flex-1">
+    <SafeAreaView edges={["top"]} style={{ backgroundColor: isDark ? "#020617" : "#f8fafc" }}>
+      <View
+        style={{
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottomWidth: 1,
+          borderBottomColor: isDark ? "#1e293b" : "#e2e8f0",
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1 }}>
           {showBack && (
             <TouchableOpacity
               onPress={() => router.back()}
-              className="p-1.5 rounded-lg bg-slate-200/50 dark:bg-slate-800 mr-1"
+              activeOpacity={0.7}
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 12,
+                backgroundColor: "#2563eb",
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: 4,
+                elevation: 2,
+                shadowColor: "#2563eb",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+              }}
             >
-              <ChevronLeft size={20} color={isDark ? "#f1f5f9" : "#0f172a"} />
+              <ChevronLeft size={20} color="#ffffff" />
             </TouchableOpacity>
           )}
 
-          <View className="flex-1">
-            <Text className={`text-xl font-extrabold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "800",
+                letterSpacing: -0.3,
+                color: isDark ? "#ffffff" : "#0f172a",
+              }}
+            >
               {title}
             </Text>
-            {subtitle && (
-              <Text className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`} numberOfLines={1}>
+            {subtitle ? (
+              <Text
+                numberOfLines={1}
+                style={{
+                  fontSize: 12,
+                  fontWeight: "500",
+                  marginTop: 1,
+                  color: isDark ? "#94a3b8" : "#64748b",
+                }}
+              >
                 {subtitle}
               </Text>
-            )}
+            ) : null}
           </View>
         </View>
 
-        {rightAction && <View className="ml-3">{rightAction}</View>}
+        {rightAction ? <View style={{ marginLeft: 12 }}>{rightAction}</View> : null}
       </View>
     </SafeAreaView>
   );

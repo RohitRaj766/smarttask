@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import React, { useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTheme } from "../../../theme/theme.context";
 import { useTaskDetails, useDeleteTask, useUpdateTask } from "../../../hooks/useTasks";
@@ -7,8 +7,9 @@ import { AppHeader } from "../../../components/ui/AppHeader";
 import { AppBadge } from "../../../components/ui/AppBadge";
 import { AppCard } from "../../../components/ui/AppCard";
 import { AppButton } from "../../../components/ui/AppButton";
+import { AppAlertModal } from "../../../components/ui/AppAlertModal";
 import { TaskPriority, TaskStatus } from "../../../types";
-import { FileText, Calendar, Bell, Clock, Edit3, Trash2, CheckCircle } from "lucide-react-native";
+import { FileText, Calendar, Bell, Clock, Edit3, Trash2, CheckCircle, Tag } from "lucide-react-native";
 
 export default function TaskDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -19,6 +20,10 @@ export default function TaskDetailsScreen() {
   const { data: taskData, isLoading } = useTaskDetails(taskId);
   const deleteTaskMutation = useDeleteTask();
   const updateTaskMutation = useUpdateTask();
+
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [errorAlertMessage, setErrorAlertMessage] = useState<string | null>(null);
 
   const task = taskData?.data;
 
@@ -43,33 +48,25 @@ export default function TaskDetailsScreen() {
     });
   };
 
-  const handleToggleStatus = async () => {
+  const confirmToggleStatus = async () => {
     if (!task) return;
+    setIsStatusModalOpen(false);
     const newStatus = task.status === TaskStatus.COMPLETED ? TaskStatus.TODO : TaskStatus.COMPLETED;
     try {
       await updateTaskMutation.mutateAsync({ taskId: task._id, payload: { status: newStatus } });
-      Alert.alert("Success", "Task status updated!");
     } catch {
-      Alert.alert("Error", "Failed to update status");
+      setErrorAlertMessage("Failed to update task status");
     }
   };
 
-  const handleDelete = () => {
-    Alert.alert("Delete Task", "Are you sure you want to delete this task?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Delete",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await deleteTaskMutation.mutateAsync(taskId);
-            router.back();
-          } catch {
-            Alert.alert("Error", "Failed to delete task");
-          }
-        },
-      },
-    ]);
+  const confirmDelete = async () => {
+    setIsDeleteModalOpen(false);
+    try {
+      await deleteTaskMutation.mutateAsync(taskId);
+      router.back();
+    } catch {
+      setErrorAlertMessage("Failed to delete task");
+    }
   };
 
   if (isLoading || !task) {
@@ -80,6 +77,8 @@ export default function TaskDetailsScreen() {
     );
   }
 
+  const isCompleted = task.status === TaskStatus.COMPLETED;
+
   return (
     <View className={`flex-1 ${isDark ? "bg-slate-950" : "bg-slate-50"}`}>
       <AppHeader
@@ -87,47 +86,81 @@ export default function TaskDetailsScreen() {
         subtitle="Detailed metadata & schedule"
         showBack
         rightAction={
-          <TouchableOpacity onPress={handleDelete} className="p-2 rounded-lg bg-red-50 dark:bg-red-950/50">
+          <TouchableOpacity
+            onPress={() => setIsDeleteModalOpen(true)}
+            className="p-2 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200/50 dark:border-red-900/40"
+          >
             <Trash2 size={18} color="#ef4444" />
           </TouchableOpacity>
         }
       />
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} className="px-4 py-4 space-y-6">
-        {/* Title Card */}
-        <AppCard className="space-y-3 p-5">
-          <Text className={`text-2xl font-extrabold leading-tight ${isDark ? "text-white" : "text-slate-900"}`}>
-            {task.title}
-          </Text>
-
-          <View className="flex-row flex-wrap items-center gap-2 pt-1">
-            <AppBadge label={task.category} variant="outline" />
-            <AppBadge
-              label={task.priority}
-              variant={
-                task.priority === TaskPriority.HIGH
-                  ? "danger"
-                  : task.priority === TaskPriority.MEDIUM
-                  ? "warning"
-                  : "secondary"
-              }
-            />
-            <AppBadge
-              label={task.status}
-              variant={
-                task.status === TaskStatus.COMPLETED
-                  ? "success"
-                  : task.status === TaskStatus.IN_PROGRESS
-                  ? "warning"
-                  : "default"
-              }
-            />
+      <ScrollView contentContainerStyle={{ paddingBottom: 50 }} className="px-4 py-4">
+        {/* Title & Badges Section */}
+        <View className="mb-5">
+          <View className="flex-row items-center gap-2 mb-2.5">
+            <Tag size={16} color="#2563eb" />
+            <Text className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+              Task Info & Classification
+            </Text>
           </View>
-        </AppCard>
+
+          <AppCard className="p-5 space-y-4">
+            <View className="mb-3">
+              <Text className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                Task Title
+              </Text>
+              <Text className={`text-2xl font-extrabold leading-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                {task.title}
+              </Text>
+            </View>
+
+            <View className="pt-3 border-t border-slate-100 dark:border-slate-800 flex-row flex-wrap items-center justify-between gap-y-3">
+              <View>
+                <Text className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                  Category
+                </Text>
+                <AppBadge label={task.category} variant="outline" />
+              </View>
+
+              <View>
+                <Text className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                  Priority
+                </Text>
+                <AppBadge
+                  label={task.priority}
+                  variant={
+                    task.priority === TaskPriority.HIGH
+                      ? "danger"
+                      : task.priority === TaskPriority.MEDIUM
+                      ? "warning"
+                      : "secondary"
+                  }
+                />
+              </View>
+
+              <View>
+                <Text className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                  Status
+                </Text>
+                <AppBadge
+                  label={task.status}
+                  variant={
+                    task.status === TaskStatus.COMPLETED
+                      ? "success"
+                      : task.status === TaskStatus.IN_PROGRESS
+                      ? "warning"
+                      : "default"
+                  }
+                />
+              </View>
+            </View>
+          </AppCard>
+        </View>
 
         {/* Description Section */}
-        <View className="space-y-2">
-          <View className="flex-row items-center gap-2">
+        <View className="mb-5">
+          <View className="flex-row items-center gap-2 mb-2.5">
             <FileText size={16} color="#2563eb" />
             <Text className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-slate-400" : "text-slate-500"}`}>
               Task Description
@@ -142,19 +175,19 @@ export default function TaskDetailsScreen() {
         </View>
 
         {/* Scheduling & Timestamps Section */}
-        <View className="space-y-2">
-          <View className="flex-row items-center gap-2">
+        <View className="mb-6">
+          <View className="flex-row items-center gap-2 mb-2.5">
             <Clock size={16} color="#2563eb" />
             <Text className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-slate-400" : "text-slate-500"}`}>
               Schedule & Timestamps
             </Text>
           </View>
 
-          <View className="flex-row flex-wrap gap-2.5">
-            <AppCard className="w-[48%] p-3 space-y-1">
-              <View className="flex-row items-center gap-1.5">
+          <View className="flex-row flex-wrap justify-between gap-y-3">
+            <AppCard className="w-[48%] p-3.5 space-y-1">
+              <View className="flex-row items-center gap-1.5 mb-1">
                 <Calendar size={14} color="#64748b" />
-                <Text className={`text-[10px] font-bold uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                <Text className={`text-[10px] font-bold uppercase tracking-wide ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                   Due Date
                 </Text>
               </View>
@@ -163,10 +196,10 @@ export default function TaskDetailsScreen() {
               </Text>
             </AppCard>
 
-            <AppCard className="w-[48%] p-3 space-y-1">
-              <View className="flex-row items-center gap-1.5">
+            <AppCard className="w-[48%] p-3.5 space-y-1">
+              <View className="flex-row items-center gap-1.5 mb-1">
                 <Bell size={14} color="#f59e0b" />
-                <Text className={`text-[10px] font-bold uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                <Text className={`text-[10px] font-bold uppercase tracking-wide ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                   Reminder
                 </Text>
               </View>
@@ -175,10 +208,10 @@ export default function TaskDetailsScreen() {
               </Text>
             </AppCard>
 
-            <AppCard className="w-[48%] p-3 space-y-1">
-              <View className="flex-row items-center gap-1.5">
+            <AppCard className="w-[48%] p-3.5 space-y-1">
+              <View className="flex-row items-center gap-1.5 mb-1">
                 <Clock size={14} color="#64748b" />
-                <Text className={`text-[10px] font-bold uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                <Text className={`text-[10px] font-bold uppercase tracking-wide ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                   Created At
                 </Text>
               </View>
@@ -187,10 +220,10 @@ export default function TaskDetailsScreen() {
               </Text>
             </AppCard>
 
-            <AppCard className="w-[48%] p-3 space-y-1">
-              <View className="flex-row items-center gap-1.5">
+            <AppCard className="w-[48%] p-3.5 space-y-1">
+              <View className="flex-row items-center gap-1.5 mb-1">
                 <Clock size={14} color="#64748b" />
-                <Text className={`text-[10px] font-bold uppercase ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                <Text className={`text-[10px] font-bold uppercase tracking-wide ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                   Updated At
                 </Text>
               </View>
@@ -202,12 +235,12 @@ export default function TaskDetailsScreen() {
         </View>
 
         {/* Action Buttons */}
-        <View className="space-y-2 pt-2">
+        <View className="pt-2 gap-3">
           <AppButton
-            title={task.status === TaskStatus.COMPLETED ? "Mark as Pending" : "Mark as Completed"}
+            title={isCompleted ? "Mark as Pending" : "Mark as Completed"}
             variant="outline"
             leftIcon={<CheckCircle size={18} color={isDark ? "#e2e8f0" : "#0f172a"} />}
-            onPress={handleToggleStatus}
+            onPress={() => setIsStatusModalOpen(true)}
             isLoading={updateTaskMutation.isPending}
           />
 
@@ -218,6 +251,44 @@ export default function TaskDetailsScreen() {
           />
         </View>
       </ScrollView>
+
+      {/* Confirmation Modal for Status Toggle */}
+      <AppAlertModal
+        visible={isStatusModalOpen}
+        type={isCompleted ? "warning" : "success"}
+        title={isCompleted ? "Mark as Pending?" : "Complete Task?"}
+        message={
+          isCompleted
+            ? "Are you sure you want to revert this task status back to pending?"
+            : "Are you sure you want to mark this task as completed?"
+        }
+        confirmText={isCompleted ? "Revert to Pending" : "Yes, Mark Completed"}
+        cancelText="Cancel"
+        onClose={() => setIsStatusModalOpen(false)}
+        onConfirm={confirmToggleStatus}
+      />
+
+      {/* Confirmation Modal for Delete */}
+      <AppAlertModal
+        visible={isDeleteModalOpen}
+        type="warning"
+        title="Delete Task?"
+        message="Are you sure you want to permanently delete this task? This action cannot be undone."
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isDestructive
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+      />
+
+      {/* Error Alert Modal */}
+      <AppAlertModal
+        visible={!!errorAlertMessage}
+        type="error"
+        title="Action Error"
+        message={errorAlertMessage || ""}
+        onClose={() => setErrorAlertMessage(null)}
+      />
     </View>
   );
 }

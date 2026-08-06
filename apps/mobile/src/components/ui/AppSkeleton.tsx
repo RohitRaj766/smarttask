@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { Animated, ViewStyle } from "react-native";
+import { Animated, View, ViewStyle } from "react-native";
 import { useTheme } from "../../theme/theme.context";
+import { AppCard } from "./AppCard";
 
 export interface AppSkeletonProps {
   width?: number | string;
@@ -50,5 +51,45 @@ export const AppSkeleton: React.FC<AppSkeletonProps> = ({
         style,
       ]}
     />
+  );
+};
+
+export const AppTaskCardSkeleton: React.FC = () => {
+  const { isDark } = useTheme();
+
+  return (
+    <View style={{ marginBottom: 12 }}>
+      <AppCard style={{ padding: 16 }}>
+        {/* Header Title & Description Skeleton */}
+        <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
+          <View style={{ flex: 1, paddingRight: 16, gap: 8 }}>
+            <AppSkeleton width="72%" height={18} borderRadius={6} />
+            <AppSkeleton width="48%" height={14} borderRadius={4} />
+          </View>
+          <AppSkeleton width={22} height={22} borderRadius={11} />
+        </View>
+
+        {/* Divider & Chips Footer Skeleton */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingTop: 12,
+            marginTop: 4,
+            borderTopWidth: 1,
+            borderTopColor: isDark ? "#1e293b" : "#f1f5f9",
+          }}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <AppSkeleton width={56} height={22} borderRadius={8} />
+            <AppSkeleton width={56} height={22} borderRadius={8} />
+            <AppSkeleton width={56} height={22} borderRadius={8} />
+          </View>
+
+          <AppSkeleton width={68} height={14} borderRadius={4} />
+        </View>
+      </AppCard>
+    </View>
   );
 };

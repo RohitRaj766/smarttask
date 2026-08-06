@@ -28,14 +28,14 @@ export const AppInput: React.FC<AppInputProps> = ({
   const { isDark } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
 
-  const containerBg = isDark ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-200";
+  const containerBg = isDark ? "bg-slate-950/80 border-slate-700/70" : "bg-slate-50 border-slate-200";
   const textColor = isDark ? "text-slate-100" : "text-slate-900";
   const placeholderColor = isDark ? "#64748b" : "#94a3b8";
 
   return (
     <View className="w-full space-y-1">
       {label && (
-        <Text className={`text-xs font-bold uppercase tracking-wider ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+        <Text className={`text-xs font-bold uppercase tracking-wider mb-2 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
           {label}
         </Text>
       )}
