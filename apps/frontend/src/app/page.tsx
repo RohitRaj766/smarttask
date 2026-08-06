@@ -20,6 +20,8 @@ import {
   Calendar,
   Layers,
   Users,
+  Smartphone,
+  Download,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -107,17 +109,27 @@ export default function LandingPage() {
             SmartTask helps ambitious professionals and teams centralize task management, eliminate project bottlenecks, and achieve peak operational throughput.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2 flex-wrap">
             <Link href="/signup">
               <Button size="lg" className="gap-2 px-8 text-base shadow-lg shadow-primary/25">
                 Start Free Workspace <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
-            <Link href="/login">
-              <Button size="lg" variant="outline" className="px-8 text-base">
-                Sign In
+            <a
+              href="https://expo.dev/accounts/rohitraj2k04/projects/smarttask-mobile/builds/e00cd746-f8fc-4481-8689-ecc19b9f4012"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                size="lg"
+                variant="secondary"
+                className="gap-2 px-6 text-base border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 shadow-md shadow-emerald-500/10"
+              >
+                <Smartphone className="h-5 w-5 text-emerald-500" />
+                <span>Download Android APK</span>
+                <Download className="h-4 w-4 text-emerald-500" />
               </Button>
-            </Link>
+            </a>
           </div>
 
           {/* Social Proof / Metrics */}
@@ -251,6 +263,16 @@ export default function LandingPage() {
                 <li><Link href="/overview" className="hover:text-primary transition-colors">Overview</Link></li>
                 <li><Link href="/tasks" className="hover:text-primary transition-colors">Task Directory</Link></li>
                 <li><Link href="/tasks/new" className="hover:text-primary transition-colors">Create Task</Link></li>
+                <li>
+                  <a
+                    href="https://expo.dev/accounts/rohitraj2k04/projects/smarttask-mobile/builds/e00cd746-f8fc-4481-8689-ecc19b9f4012"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-emerald-400 transition-colors text-emerald-500 font-semibold"
+                  >
+                    Download Mobile APK
+                  </a>
+                </li>
               </ul>
             </div>
 

@@ -66,7 +66,6 @@ export const AppModal: React.FC<AppModalProps> = ({
               borderColor: isDark ? "#1e293b" : "#f1f5f9",
               elevation: 12,
               shadowColor: "#000000",
-              shadowOffset: { width: 0, height: -5 },
               shadowOpacity: 0.25,
               shadowRadius: 15,
               position: "relative",

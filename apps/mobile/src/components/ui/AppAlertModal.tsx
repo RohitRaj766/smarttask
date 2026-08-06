@@ -144,7 +144,6 @@ export const AppAlertModal: React.FC<AppAlertModalProps> = ({
             borderColor: isDark ? "#1e293b" : "#f1f5f9",
             elevation: 20,
             shadowColor: "#000000",
-            shadowOffset: { width: 0, height: 10 },
             shadowOpacity: 0.35,
             shadowRadius: 20,
             zIndex: 100,
