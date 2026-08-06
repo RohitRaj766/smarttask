@@ -1,11 +1,17 @@
 import { IEmailProvider } from "../../providers/email.provider.js";
 import { ResendEmailProvider } from "../../providers/resend.provider.js";
+import { PromailerEmailProvider } from "../../providers/promailer.provider.js";
+import { env } from "../../config/env.config.js";
 import { NotificationRepository, notificationRepository } from "./notification.repository.js";
 import { CreateNotificationInput } from "./notification.types.js";
 
+const defaultEmailProvider: IEmailProvider = env.API_MAIL_KEY_PROMAILER
+  ? new PromailerEmailProvider()
+  : new ResendEmailProvider();
+
 export class NotificationService {
   constructor(
-    private emailProvider: IEmailProvider = new ResendEmailProvider(),
+    private emailProvider: IEmailProvider = defaultEmailProvider,
     private repository: NotificationRepository = notificationRepository
   ) {}
 

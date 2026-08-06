@@ -11,7 +11,10 @@ const envSchema = z.object({
   JWT_REFRESH_SECRET: z.string().default("refresh-secret-key-smarttask-2026"),
   CORS_ORIGIN: z.string().default("http://localhost:3000,https://smarttaskk.vercel.app/"),
   RESEND_API_KEY: z.string().optional(),
+  API_MAIL_KEY_PROMAILER: z.string().optional(),
+  PROMAILER_URL: z.string().default("https://mailserver.automationlounge.com/api/v1/messages/send"),
   EMAIL_FROM: z.string().default("SmartTask Notification <onboarding@resend.dev>"),
+  EMAIL_FROM_PROMAILER: z.string().default("SmartTask Notification <[EMAIL_ADDRESS]>"),
   OTP_EXPIRY_MINUTES: z.string().default("10"),
   CRON_EXPRESSION: z.string().default("* * * * *"),
 });
