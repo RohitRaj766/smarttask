@@ -156,13 +156,13 @@ export default function DashboardScreen() {
           </Text>
 
           {isStatsLoading ? (
-            <View className="flex-row flex-wrap gap-2.5">
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
               {Array.from({ length: 6 }).map((_, i) => (
                 <AppSkeleton key={i} width="48%" height={75} borderRadius={16} />
               ))}
             </View>
           ) : (
-            <View className="flex-row flex-wrap gap-2.5">
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
               {statCards.map((card) => (
                 <AppStatCard
                   key={card.title}
