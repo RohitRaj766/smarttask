@@ -19,7 +19,8 @@ export class TaskController {
   getTaskById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user) throw new UnauthorizedException();
-      const task = await this.taskService.getTaskById(req.params.taskId, req.user.userId);
+      const taskId = req.params.taskId as string;
+      const task = await this.taskService.getTaskById(taskId, req.user.userId);
       sendSuccessResponse(res, 200, "Task fetched successfully", task);
     } catch (error) {
       next(error);
@@ -39,8 +40,9 @@ export class TaskController {
   updateTask = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user) throw new UnauthorizedException();
+      const taskId = req.params.taskId as string;
       const task = await this.taskService.updateTask(
-        req.params.taskId,
+        taskId,
         req.user.userId,
         req.body
       );
@@ -53,7 +55,8 @@ export class TaskController {
   deleteTask = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user) throw new UnauthorizedException();
-      await this.taskService.deleteTask(req.params.taskId, req.user.userId);
+      const taskId = req.params.taskId as string;
+      await this.taskService.deleteTask(taskId, req.user.userId);
       sendSuccessResponse(res, 200, "Task deleted successfully");
     } catch (error) {
       next(error);
