@@ -11,6 +11,7 @@ import { userRoutes } from "./modules/user/user.routes.js";
 import { taskRoutes } from "./modules/task/task.routes.js";
 import { enumRoutes } from "./modules/enum/enum.routes.js";
 import notificationRoutes from "./modules/notification/notification.routes.js";
+import { chatRoutes } from "./modules/chat/chat.routes.js";
 import { notFoundHandler } from "./middlewares/not-found.middleware.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 import { ForbiddenException } from "./utils/exceptions.js";
@@ -87,6 +88,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/tasks", taskRoutes);
 app.use("/api/v1/enum", enumRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/chat", chatRoutes);
 
 // 8. 404 Middleware
 app.use(notFoundHandler);

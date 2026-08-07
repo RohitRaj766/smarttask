@@ -465,6 +465,36 @@ const swaggerDocument = {
         responses: { 200: { description: "Task deleted" } },
       },
     },
+    "/chat": {
+      post: {
+        tags: ["Chat AI"],
+        summary: "Platform AI Assistant (Grok)",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["messages"],
+                properties: {
+                  messages: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        role: { type: "string", enum: ["user", "assistant"] },
+                        content: { type: "string" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "AI response generated" } },
+      },
+    },
   },
 };
 
