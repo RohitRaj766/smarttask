@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { ChatBot } from "../components/chat-bot";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent } from "../components/ui/card";
@@ -305,6 +306,9 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* SmartTask AI Floating Chatbot */}
+      <ChatBot />
     </div>
   );
 }
